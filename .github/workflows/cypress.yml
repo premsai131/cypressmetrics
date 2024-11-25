@@ -1,0 +1,42 @@
+name: Run Cypress Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: # Enables manual triggering of the workflow
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Run Cypress tests and capture runId
+      - name: Run Cypress tests
+        id: cypress-run
+        run: |
+          npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 | tee cypress-output.log
+          # Extract the Cypress run ID
+          CYPRESS_RUN_ID=$(grep -oP '(?<=https://cloud.cypress.io/runs/)[^ ]+' cypress-output.log)
+          echo "CYPRESS_RUN_ID=${CYPRESS_RUN_ID}" >> $GITHUB_ENV
+
+      # Step 5: Log Cypress run ID
+      - name: Log Cypress Run ID
+        run: echo "Cypress Run ID is: $CYPRESS_RUN_ID"
