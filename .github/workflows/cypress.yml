@@ -36,7 +36,5 @@ jobs:
           # Extract the Cypress run ID
           CYPRESS_RUN_ID=$(grep -oP '(?<=https://cloud.cypress.io/runs/)[^ ]+' cypress-output.log)
           echo "CYPRESS_RUN_ID=${CYPRESS_RUN_ID}" >> $GITHUB_ENV
+          echo ${{ env.CYPRESS_RUN_ID }}
 
-      # Step 5: Log Cypress run ID
-      - name: Log Cypress Run ID
-        run: echo "Cypress Run ID is: ${{ env.CYPRESS_RUN_ID }}"
