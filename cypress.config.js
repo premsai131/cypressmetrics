@@ -5,5 +5,7 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
+    // Add your projectId here
+    projectId: "qdjmfg",  // Replace with your actual project ID from Cypress dashboard
   },
 });
