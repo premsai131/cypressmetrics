@@ -34,23 +34,19 @@ jobs:
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 | tee cypress-output.log
      
+      # Step 5: Capture Cypress Run URL
       - name: Capture Cypress Run URL
         id: capture-url
         run: |
           CYPRESS_RUN_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' cypress-output.log)
           echo "CYPRESS_RUN_URL=$CYPRESS_RUN_URL" >> $GITHUB_ENV
-          echo "::set-output name=run_url::$CYPRESS_RUN_URL"
-   
-  handle-errors:
-   needs: cypress-run
-   runs-on: ubuntu-latest
-   if: ${{ failure() }}
-   steps:
-     - name: Display Cypress Run URL
-       run: |
-         echo "Captured Cypress Run URL: ${{ needs.cypress-run.outputs.cypress_run_url }}"
-  
+          echo "cypress_run_url=$CYPRESS_RUN_URL" >> $GITHUB_OUTPUT
 
-        
-          
-          
+  handle-errors:
+    needs: cypress-run
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    steps:
+      - name: Display Cypress Run URL
+        run: |
+          echo "Captured Cypress Run URL: ${{ env.CYPRESS_RUN_URL }}"
