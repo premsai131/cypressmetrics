@@ -33,11 +33,4 @@ jobs:
         id: cypress-run
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 | tee cypress-output.log
-          # Extract the Cypress run ID
-          # Capture the Cypress Run ID from the output log
-          CYPRESS_RUN_ID=$(grep -oP '(?<=Recorded Run: https://cloud.cypress.io/projects/)[^ ]+' cypress-output.log)
-
-          echo "CYPRESS_RUN_ID=$CYPRESS_RUN_ID" >> $GITHUB_ENV
-
-          # Optionally, output the Run ID for debugging
-          echo "Cypress Run ID: $CYPRESS_RUN_ID"
+          cat cypress-output.log
