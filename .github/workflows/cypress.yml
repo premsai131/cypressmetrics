@@ -1,4 +1,4 @@
-  jobs:
+jobs:
   cypress-run:
     runs-on: ubuntu-latest
 
