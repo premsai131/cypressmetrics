@@ -1,29 +1,51 @@
+name: Run Cypress Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: # Enables manual triggering of the workflow
+
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      - name: Run Cypress Tests
+      # Step 4: Run Cypress tests and capture runId
+      - name: Run Cypress tests
+        id: cypress-run
         run: |
-          npx cypress run --record --key your-key | tee cypress-output.log
-
-      - name: Extract Cypress Run Number
-        id: extract-run-number
+          npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 | tee cypress-output.log
+     
+      # Step 5: Capture Cypress Run Number
+      - name: Capture Cypress Run Number
+        id: capture-url
         run: |
           CYPRESS_RUN_NUMBER=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' cypress-output.log | grep -o '[0-9]*$' || echo "")
           echo "CYPRESS_RUN_NUMBER=$CYPRESS_RUN_NUMBER" >> $GITHUB_ENV
           echo "CYPRESS_RUN_NUMBER=$CYPRESS_RUN_NUMBER" >> $GITHUB_OUTPUT
 
+  handle-errors:
+    needs: cypress-run
+    runs-on: ubuntu-latest
+    if: ${{ failure() }}
+    steps:
       - name: Display Run Number
-        run: echo "Captured Run Number: ${{ env.CYPRESS_RUN_NUMBER }}"
+        run: echo "Captured Run Number: ${{ needs.cypress-run.outputs.CYPRESS_RUN_NUMBER }}"
