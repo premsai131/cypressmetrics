@@ -34,6 +34,9 @@ jobs:
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 | tee cypress-output.log
           cat cypress-output.log
+          grep --version
+          grep 'Recorded Run:' cypress-output.log
           CYPRESS_RUN_URL=$(grep -oP 'Recorded Run: https://cloud.cypress.io/projects/\K[^ ]+' cypress-output.log)
+          echo "Captured Cypress Run URL: $CYPRESS_RUN_URL"
           
           
