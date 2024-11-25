@@ -39,10 +39,8 @@ jobs:
         id: capture-url
         run: |
           CYPRESS_RUN_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' cypress-output.log)
-          # Escape the URL before writing it to the environment
-          SAFE_URL=$(echo "$CYPRESS_RUN_URL" | sed 's/%/%25/g; s/\n/%0A/g; s/\r/%0D/g; s/:/%3A/g; s/\//%2F/g')
-          echo "CYPRESS_RUN_URL=$SAFE_URL" >> $GITHUB_ENV
-          echo "cypress_run_url=$SAFE_URL" >> $GITHUB_OUTPUT
+          echo "CYPRESS_RUN_URL=$CYPRESS_RUN_URL" >> $GITHUB_ENV
+          echo "cypress_run_url=$CYPRESS_RUN_URL" >> $GITHUB_OUTPUT
 
   handle-errors:
     needs: cypress-run
