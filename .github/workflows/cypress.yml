@@ -42,13 +42,13 @@ jobs:
           echo "::set-output name=run_url::$CYPRESS_RUN_URL"
    
   handle-errors:
-  needs: cypress-run
-  runs-on: ubuntu-latest
-  if: ${{ failure() }}
-  steps:
-    - name: Display Cypress Run URL
-      run: |
-        echo "Captured Cypress Run URL: ${{ needs.cypress-run.outputs.cypress_run_url }}"
+   needs: cypress-run
+   runs-on: ubuntu-latest
+   if: ${{ failure() }}
+   steps:
+     - name: Display Cypress Run URL
+       run: |
+         echo "Captured Cypress Run URL: ${{ needs.cypress-run.outputs.cypress_run_url }}"
   
 
         
