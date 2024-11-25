@@ -39,4 +39,4 @@ jobs:
 
       # Step 5: Log Cypress run ID
       - name: Log Cypress Run ID
-        run: echo "Cypress Run ID is: $CYPRESS_RUN_ID"
+        run: echo "Cypress Run ID is: ${{ env.CYPRESS_RUN_ID }}"
