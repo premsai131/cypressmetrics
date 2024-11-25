@@ -33,6 +33,9 @@ jobs:
         id: cypress-run
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 | tee cypress-output.log
+  
+      - name: get record url
+        run: |
           cat cypress-output.log
           grep --version
           grep 'Recorded Run:' cypress-output.log
