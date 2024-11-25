@@ -28,25 +28,30 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Run Cypress tests and capture runId
+      # Step 4: Run Cypress tests and capture run number
       - name: Run Cypress tests
         id: cypress-run
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 | tee cypress-output.log
-     
-      # Step 5: Capture Cypress Run URL
-      - name: Capture Cypress Run URL
-        id: capture-url
+
+      # Step 5: Extract Cypress Run Number
+      - name: Extract Run Number
+        id: extract-run-number
         run: |
-          CYPRESS_RUN_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' cypress-output.log)
-          echo "CYPRESS_RUN_URL=$CYPRESS_RUN_URL" >> $GITHUB_ENV
-          echo "cypress_run_url=$CYPRESS_RUN_URL" >> $GITHUB_OUTPUT
+          CYPRESS_RUN_NUMBER=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' cypress-output.log | grep -o '[0-9]*$' || echo "")
+          if [ -z "$CYPRESS_RUN_NUMBER" ]; then
+            echo "No Cypress Run Number found!" >&2
+            exit 1
+          fi
+          echo "CYPRESS_RUN_NUMBER=$CYPRESS_RUN_NUMBER" >> $GITHUB_ENV
+          echo "run_number=$CYPRESS_RUN_NUMBER" >> $GITHUB_OUTPUT
+        shell: bash
 
   handle-errors:
     needs: cypress-run
     runs-on: ubuntu-latest
     if: ${{ failure() }}
     steps:
-      - name: Display Cypress Run URL
+      - name: Display Cypress Run Number
         run: |
-          echo "Captured Cypress Run URL: ${{ env.CYPRESS_RUN_URL }}"
+          echo "Captured Cypress Run Number: ${{ env.CYPRESS_RUN_NUMBER }}"
