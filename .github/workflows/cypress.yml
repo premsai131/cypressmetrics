@@ -33,13 +33,24 @@ jobs:
         id: cypress-run
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 | tee cypress-output.log
-  
-      - name: get record url
+     
+      - name: Capture Cypress Run URL
+        id: capture-url
         run: |
-          cat cypress-output.log
-          grep --version
-          grep 'Recorded Run:' cypress-output.log
           CYPRESS_RUN_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' cypress-output.log)
-          echo "Captured Cypress Run URL: $CYPRESS_RUN_URL"
+          echo "CYPRESS_RUN_URL=$CYPRESS_RUN_URL" >> $GITHUB_ENV
+          echo "::set-output name=run_url::$CYPRESS_RUN_URL"
+   
+  handle-errors:
+  needs: cypress-run
+  runs-on: ubuntu-latest
+  if: ${{ failure() }}
+  steps:
+    - name: Display Cypress Run URL
+      run: |
+        echo "Captured Cypress Run URL: ${{ needs.cypress-run.outputs.cypress_run_url }}"
+  
+
+        
           
           
