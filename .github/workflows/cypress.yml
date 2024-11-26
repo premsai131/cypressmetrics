@@ -12,8 +12,6 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    outputs: 
-      run_number: ${{ steps.capture-run-number.outputs.run_number }}
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
@@ -38,6 +36,8 @@ jobs:
       # Step 5: Capture Cypress Run Number
       - name: Capture Cypress Run Number
         id: capture-run-number
+        outputs: 
+          run_number: ${{ steps.capture-run-number.outputs.run_number }}
         run: |
           # Capture the Cypress run number from the cypress-output.log
           CYPRESS_RUN_NUMBER=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' cypress-output.log | grep -o '[0-9]*$' || echo "not_found")
