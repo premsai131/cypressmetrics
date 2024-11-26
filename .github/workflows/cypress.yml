@@ -12,7 +12,8 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-
+    outputs: 
+      CYPRESS_RUN_NUMBER: ${{ steps.capture-run-number.outputs.run_number }}
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
@@ -39,7 +40,7 @@ jobs:
         id: capture-run-number
         run: |
           CYPRESS_RUN_NUMBER=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' cypress-output.log | grep -o '[0-9]*$' || echo "")
-          echo "$CYPRESS_RUN_NUMBER" >> $GITHUB_ENV
+          echo "run_number=$CYPRESS_RUN_NUMBER" >> $GITHUB_OUTPUT
 
   handle-errors:
     needs: cypress-run
@@ -47,4 +48,4 @@ jobs:
     if: ${{ always() }}
     steps:
       - name: Display Run Number
-        run: echo "${{ env.CYPRESS_RUN_NUMBER }}"
+        run: echo "${{ needs.cypress-run.outputs.cypress_run_number }}"
