@@ -39,8 +39,13 @@ jobs:
       - name: Capture Cypress Run Number
         id: capture-run-number
         run: |
+          # Capture the Cypress run number from the cypress-output.log
           CYPRESS_RUN_NUMBER=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' cypress-output.log | grep -o '[0-9]*$' || echo "not_found")
-          echo "CYPRESS_RUN_NUMBER=$CYPRESS_RUN_NUMBER"  # Debugging line
+
+          # Debugging line - ensure the run number is correctly captured
+          echo "CYPRESS_RUN_NUMBER=$CYPRESS_RUN_NUMBER"
+ 
+          # Correct format to set output variable
           echo "run_number=$CYPRESS_RUN_NUMBER" >> $GITHUB_OUTPUT
 
   handle-errors:
