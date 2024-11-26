@@ -48,4 +48,7 @@ jobs:
     if: ${{ always() }}
     steps:
       - name: Display Run Number
-        run: echo "${{ needs.cypress-run.outputs.cypress_run_number }}"
+        run: |
+          pwd
+          ls -alh
+          echo "${{ needs.cypress-run.outputs.cypress_run_number }}"
