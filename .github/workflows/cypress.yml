@@ -37,9 +37,9 @@ jobs:
   handle-errors:
     needs: cypress-run
     runs-on: ubuntu-latest
-    if: ${{ failure() }}
+    if: ${{ allways() }}
     steps:
       - name: Display Run Number
         run: |
           CYPRESS_RUN_NUMBER=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' cypress-output.log | grep -o '[0-9]*$' || echo "")
-          echo "cypress_run_number=$CYPRESS_RUN_NUMBER" >> $GITHUB_OUTPUT
+          echo "cypress_run_number=$CYPRESS_RUN_NUMBER"
