@@ -37,7 +37,7 @@ jobs:
   handle-errors:
     needs: cypress-run
     runs-on: ubuntu-latest
-    if: ${{ allways() }}
+    if: ${{ always() }}
     steps:
       - name: Display Run Number
         run: |
