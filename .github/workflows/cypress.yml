@@ -13,7 +13,7 @@ jobs:
   cypress-run:
     runs-on: ubuntu-latest
     outputs: 
-      CYPRESS_RUN_NUMBER: ${{ steps.capture-run-number.outputs.run_number }}
+      run_number: ${{ steps.capture-run-number.outputs.run_number }}
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
