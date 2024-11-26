@@ -39,10 +39,9 @@ jobs:
         id: capture-run-number
         run: |
           CYPRESS_RUN_NUMBER=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' cypress-output.log | grep -o '[0-9]*$' || echo "")
-          echo "CYPRESS_RUN_NUMBER=$CYPRESS_RUN_NUMBER" >> $GITHUB_ENV
-          echo "CYPRESS_RUN_NUMBER=$CYPRESS_RUN_NUMBER" >> $GITHUB_OUTPUT
+          echo "cypress_run_number=$CYPRESS_RUN_NUMBER" >> $GITHUB_ENV
         outputs:
-          cypress_run_number: ${{ steps.capture-run-number.outputs.CYPRESS_RUN_NUMBER }}
+          cypress_run_number: ${{ steps.capture-run-number.outputs.cypress_run_number }}
 
   handle-errors:
     needs: cypress-run
