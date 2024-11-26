@@ -42,3 +42,8 @@ jobs:
 
           # Debugging line - ensure the run number is correctly captured
           echo "CYPRESS_RUN_NUMBER=$CYPRESS_RUN_NUMBER"
+          echo "CYPRESS_RUN_NUMBER=$CYPRESS_RUN_NUMBER" >> $GITHUB_ENV
+      
+      - name: Capture Cypress Run Number
+        run: |
+          echo "The Cypress Run Number is: ${{ env.CYPRESS_RUN_NUMBER }}"
