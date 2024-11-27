@@ -32,11 +32,14 @@ jobs:
         id: cypress-run
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
-          mkdir -p cypress/reports/mocha/Regression # Ensure path exists
-          echo "Sample Mocha Report" > cypress/reports/mocha/Regression/report.html
+          echo "cypresSS"
+          ls -la cypress
+          echo "reports"
+          ls -la reports
 
       # Step 5: Cache Mocha reports
       - name: Cache Mocha Reports
+        if: ${{ always() }}
         uses: actions/cache@v3
         with:
           path: cypress/reports/mocha/
