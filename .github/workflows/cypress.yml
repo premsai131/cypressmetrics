@@ -35,13 +35,13 @@ jobs:
      
       # Step 5: Capture Cypress Run Number
       - name: Set up Node.js
-        if: ${{ failure() }}
+        if: ${{ always() }}
         uses: actions/setup-node@v3
         with:
           node-version: '16'
       
       - name: Install Dependencies
-        if: ${{ failure() }}
+        if: ${{ always() }}
         run: |
           echo "Debug: Checking current directory before installing dependencies"
           pwd
@@ -56,7 +56,7 @@ jobs:
           npm install
       
       - name: Run Cypress Error Handler
-        if: ${{ failure() }}
+        if: ${{ always() }}
         run: |
           echo "Debug: Checking current directory"
           pwd
