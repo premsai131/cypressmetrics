@@ -34,10 +34,9 @@ jobs:
         id: cypress-run
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
-          pwd
-          echo "cypress SS"
+          echo "Listing reports directory"
           ls -la cypress/reports
-          echo "mocha"
+          echo "Listing mocha/Regression directory"
           ls -la cypress/reports/mocha/Regression/.jsons
           
       # Step 5: Set the report path for the next job using environment files
@@ -50,14 +49,18 @@ jobs:
     needs: cypress-run  # Ensure this job runs after the cypress-run job
     if: ${{ always() }}  # Runs only if any upstream job (cypress-run) fails
     steps:
-      # Step 1: Create the required directory in the next job
+      # Step 1: Create the required directory in the next job (ensure write access)
       - name: Create report directory
-        run: mkdir -p cypress/reports/mocha/Regression/.jsons
+        run: |
+          echo "Creating report directory..."
+          mkdir -p cypress/reports/mocha/Regression/.jsons
+          chmod -R 755 cypress/reports/mocha/Regression/.jsons  # Ensure write access
 
       # Step 2: Copy Mocha Reports from the previous job's output
       - name: Copy Mocha Report
         run: |
           echo "Copying reports from: $REPORT_PATH"
+          ls -la $REPORT_PATH  # Debug: List contents of $REPORT_PATH
           cp -R $REPORT_PATH/* cypress/reports/mocha/Regression/.jsons
 
       # Step 3: Debug directory contents
