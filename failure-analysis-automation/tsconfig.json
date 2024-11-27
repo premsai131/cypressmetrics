@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "es2015", // or higher
+    "module": "commonjs",
+    "lib": ["esnext"],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "downlevelIteration": true
+  }
+}
