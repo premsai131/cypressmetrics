@@ -37,13 +37,22 @@ jobs:
   error-handler:
     runs-on: ubuntu-latest
     needs: cypress-run
-    if: ${{ always() }} # Runs only if any upstream job (cypress-run) fails
+    if: ${{ failure() }} # Runs only if any upstream job (cypress-run) fails
     steps:
       - name: Run Error Handler
         run: |
           echo "Setting up Node.js environment..."
           node -v || (echo "Node.js not found, setting it up..." && nvm install 16)
 
+          echo "Installing dependencies..."
+          cd ./failure-analysis-automation
+          npm install
+          ls -la cypress
+
           GITHUB_RUN_ID="${{ github.run_id }}"
+
           echo "GitHub Run ID: $GITHUB_RUN_ID"
+          
+          npx ts-node failure-analysis-automation/cypress/errorHandler.ts 
+
           
