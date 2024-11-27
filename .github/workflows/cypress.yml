@@ -34,6 +34,7 @@ jobs:
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
           
       - name: Capture Cypress URL from Logs
+        if: ${{ always() }}
         id: capture_url
         run: |
           # Save the logs to a file (to capture the Cypress URL printed during the test run)
