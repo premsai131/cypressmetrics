@@ -31,14 +31,21 @@ jobs:
       - name: Run Cypress tests
         id: cypress-run
         run: |
-          npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 | tee cypress-output.log
+          npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
           
-      # Step 5: Upload artifacts (Optional: in case needed in the next job)
-      - name: Capture Cypress Run URL
+      - name: Capture Cypress URL from Logs
+        id: capture_url
         run: |
-          # Capture the Cypress URL from the action's output
-          CYPRESS_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' <<< "${{ steps.cypress_run.outputs.cypress_url }}")
+          # Save the logs to a file (to capture the Cypress URL printed during the test run)
+          echo "Capturing Cypress URL from logs..."
+          CYPRESS_LOGS=$(cat $GITHUB_ENV | grep "https://cloud.cypress.io/projects/")
+          echo "Captured logs: $CYPRESS_LOGS"
+
+          # Extract Cypress URL from the logs
+          CYPRESS_URL=$(echo "$CYPRESS_LOGS" | grep -o 'https://cloud.cypress.io/projects/[^ ]*' | head -n 1)
           echo "Cypress URL: $CYPRESS_URL"
+          
+          # Save the Cypress URL to be used in another job
           echo "::set-output name=cypress_url::$CYPRESS_URL"
 
   error-handler:
