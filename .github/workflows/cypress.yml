@@ -12,6 +12,8 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
+    outputs:
+      report-path: ${{ steps.set-report-path.outputs.report-path }}  # Output the report path for the next job
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
@@ -33,53 +35,45 @@ jobs:
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
           pwd
-          echo "cypresSS"
+          echo "cypress SS"
           ls -la cypress/reports
-          
           echo "mocha"
           ls -la cypress/reports/mocha/Regression/.jsons
           
-
-
-      # Step 5: Cache Mocha reports
-      - name: Cache Mocha Reports
-        if: ${{ always() }}
-        uses: actions/cache@v3
-        with:
-          path: cypress/reports/mocha/
-          key: mocha-reports-${{ github.run_id }}
-          restore-keys: mocha-reports-
+      # Step 5: Set the report path for the next job
+      - name: Set Report Path
+        id: set-report-path
+        run: echo "::set-output name=report-path::$(pwd)/cypress/reports/mocha/Regression/.jsons"
 
   error-handler:
     runs-on: ubuntu-latest
-    needs: cypress-run
-    if: ${{ failure() }} # Runs only if any upstream job (cypress-run) fails
+    needs: cypress-run  # Ensure this job runs after the cypress-run job
+    if: ${{ failure() }}  # Runs only if any upstream job (cypress-run) fails
     steps:
-      # Step 1: Restore cached Mocha reports
-      - name: Restore Mocha Reports from Cache
-        uses: actions/cache@v3
-        with:
-          path: cypress/reports/mocha/
-          key: mocha-reports-${{ github.run_id }}
-          restore-keys: mocha-reports-
+      # Step 1: Create the required directory in the next job
+      - name: Create report directory
+        run: mkdir -p cypress/reports/mocha/Regression/.jsons
 
-      # Step 2: Debug directory contents
+      # Step 2: Copy Mocha Reports from the previous job's output
+      - name: Copy Mocha Report
+        run: |
+          cp -R ${{ needs.cypress-run.outputs.report-path }}/* cypress/reports/mocha/Regression/.jsons
+
+      # Step 3: Debug directory contents
       - name: Debug Mocha Reports
         run: |
           echo "Mocha Reports Directory Contents:"
-          ls -R reports/mocha/
+          ls -R cypress/reports/mocha/Regression/.jsons
 
-      # Step 3: Run Error Handler
+      # Step 4: Run Error Handler
       - name: Run Error Handler
         run: |
           echo "Setting up Node.js environment..."
           node -v || (echo "Node.js not found, setting it up..." && nvm install 16)
-
           echo "Installing dependencies..."
           cd ./failure-analysis-automation
           npm install
           ls -la cypress
-
           GITHUB_RUN_ID="${{ github.run_id }}"
           echo "GitHub Run ID: $GITHUB_RUN_ID"
           
