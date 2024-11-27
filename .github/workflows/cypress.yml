@@ -65,4 +65,4 @@ jobs:
           CYPRESS_RUN_NUMBER=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' cypress-output.log | grep -o '[0-9]*$' || echo "not_found")
           
           echo "Running error handler for failures..."
-          npx ts-node cypress/errorHandler.ts blitz Regression $CYPRESS_RUN_NUMBER wrt
+          npx ts-node failure-analysis-automation/cypress/errorHandler.ts blitz Regression $CYPRESS_RUN_NUMBER wrt
