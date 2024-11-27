@@ -44,11 +44,6 @@ jobs:
           echo "Setting up Node.js environment..."
           node -v || (echo "Node.js not found, setting it up..." && nvm install 16)
 
-          echo "Installing dependencies..."
-          cd ./failure-analysis-automation
-          npm install
-
           GITHUB_RUN_ID="${{ github.run_id }}"
           echo "GitHub Run ID: $GITHUB_RUN_ID"
           
-          npx ts-node cypress/errorHandler.ts "$ENV_NAME" "$TEST_TYPE" "$GITHUB_RUN_ID" "$CYPRESS_RUN_NUMBER" "$CYPRESS_PROJECT_ID"
