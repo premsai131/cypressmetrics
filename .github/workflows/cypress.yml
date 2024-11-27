@@ -32,26 +32,29 @@ jobs:
         id: cypress-run
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
+          mkdir -p cypress/reports/mocha/Regression # Ensure path exists
+          echo "Sample Mocha Report" > cypress/reports/mocha/Regression/report.html
 
-      # Step 5: Upload Mocha reports as artifacts
-      - name: Upload Mocha Reports
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v3
+      # Step 5: Cache Mocha reports
+      - name: Cache Mocha Reports
+        uses: actions/cache@v3
         with:
-          name: mocha-reports
-          path: cypress/reports/mocha/ # Upload the whole folder
+          path: cypress/reports/mocha/
+          key: mocha-reports-${{ github.run_id }}
+          restore-keys: mocha-reports-
 
   error-handler:
     runs-on: ubuntu-latest
     needs: cypress-run
     if: ${{ failure() }} # Runs only if any upstream job (cypress-run) fails
     steps:
-      # Step 1: Download Mocha Reports artifact
-      - name: Download Mocha Reports
-        uses: actions/download-artifact@v3
+      # Step 1: Restore cached Mocha reports
+      - name: Restore Mocha Reports from Cache
+        uses: actions/cache@v3
         with:
-          name: mocha-reports
-          path: cypress/reports/mocha/ # Download to the same path
+          path: cypress/reports/mocha/
+          key: mocha-reports-${{ github.run_id }}
+          restore-keys: mocha-reports-
 
       # Step 2: Debug directory contents
       - name: Debug Mocha Reports
