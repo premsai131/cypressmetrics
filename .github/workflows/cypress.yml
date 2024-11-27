@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: mocha-reports
-          path: cypress/reports/mocha/Regression/.jsons/*  # Correct path to the report file
+          path: cypress/reports/mocha/Regression/.jsons/  # Correct path to the report file
 
   error-handler:
     runs-on: ubuntu-latest
