@@ -44,6 +44,7 @@ jobs:
           echo "Setting up Node.js environment..."
           node -v || (echo "Node.js not found, setting it up..." && nvm install 16)
           ls 
+          ls -la
 
           echo "Installing dependencies..."
           cd ./failure-analysis-automation
