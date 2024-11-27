@@ -19,12 +19,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-
       # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
@@ -38,43 +32,35 @@ jobs:
           ls -la cypress/reports
           echo "Listing mocha/Regression directory"
           ls -la cypress/reports/mocha/Regression/.jsons
-          
-      # Step 5: Set the report path for the next job using environment files
-      - name: Set Report Path
-        id: set-report-path
-        run: echo "REPORT_PATH=$(pwd)/cypress/reports/mocha/Regression/.jsons" >> $GITHUB_ENV
+
+      # Step 5: Upload Mocha Reports as an artifact
+      - name: Upload Mocha Reports Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mocha-reports
+          path: cypress/reports/mocha/Regression/.jsons  # Path to the generated report files
 
   error-handler:
     runs-on: ubuntu-latest
     needs: cypress-run  # Ensure this job runs after the cypress-run job
     if: ${{ always() }}  # Runs only if any upstream job (cypress-run) fails
     steps:
-      # Step 1: Create the required directory in the next job (ensure write access)
-      - name: Create report directory
-        run: |
-          echo "Creating report directory..."
-          mkdir -p cypress/reports/mocha/Regression/.jsons
-          chmod -R 755 cypress/reports/mocha/Regression/.jsons  # Ensure write access
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Step 2: Copy Mocha Reports from the previous job's output
-      - name: Copy Mocha Report
-        run: |
-          echo "Copying reports from: $REPORT_PATH"
-          ls -la $REPORT_PATH  # Debug: List contents of $REPORT_PATH
+      # Step 2: Download Mocha Reports Artifact from the previous job
+      - name: Download Mocha Reports Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: mocha-reports
+          path: ./cypress/reports/mocha/Regression/  # Path to download the artifact to
 
-          # Check if there are any .json files in $REPORT_PATH
-          if find $REPORT_PATH -name "*.json" | grep -q .; then
-            echo "Found JSON files, copying..."
-            find $REPORT_PATH -name "*.json" -exec cp {} cypress/reports/mocha/Regression/.jsons \;
-          else
-            echo "No JSON files found in $REPORT_PATH."
-          fi
-
-      # Step 3: Debug directory contents
-      - name: Debug Mocha Reports
+      # Step 3: Debug the downloaded report directory
+      - name: Debug Mocha Reports Directory
         run: |
           echo "Mocha Reports Directory Contents:"
-          ls -R cypress/reports/mocha/Regression/.jsons
+          ls -R ./cypress/reports/mocha/Regression/
 
       # Step 4: Run Error Handler
       - name: Run Error Handler
