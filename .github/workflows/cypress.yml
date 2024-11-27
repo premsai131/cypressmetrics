@@ -61,7 +61,14 @@ jobs:
         run: |
           echo "Copying reports from: $REPORT_PATH"
           ls -la $REPORT_PATH  # Debug: List contents of $REPORT_PATH
-          find $REPORT_PATH -name "*.json" -exec cp {} cypress/reports/mocha/Regression/.jsons \;
+
+          # Check if there are any .json files in $REPORT_PATH
+          if find $REPORT_PATH -name "*.json" | grep -q .; then
+            echo "Found JSON files, copying..."
+            find $REPORT_PATH -name "*.json" -exec cp {} cypress/reports/mocha/Regression/.jsons \;
+          else
+            echo "No JSON files found in $REPORT_PATH."
+          fi
 
       # Step 3: Debug directory contents
       - name: Debug Mocha Reports
