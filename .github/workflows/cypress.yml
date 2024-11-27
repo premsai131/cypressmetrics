@@ -40,20 +40,11 @@ jobs:
           name: cypress-output
           path: cypress-output.log
 
-      - name: Extract Cypress Run ID from logs
+      - name: Capture Cypress Run URL
         run: |
-          # Extract the Cypress Run ID from the Cypress Run URL printed in the job logs
-          CYPRESS_RUN_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' $GITHUB_RUN_LOG | grep -o '[0-9]*' || echo "not_found")
-          
-          if [ "$CYPRESS_RUN_URL" == "not_found" ]; then
-            echo "Cypress Run ID not found in the logs."
-            exit 1
-          fi
-          
-          echo "Cypress Run ID: $CYPRESS_RUN_URL"
-          
-          # Optionally store it as an environment variable for use in other steps
-          echo "CYPRESS_RUN_ID=$CYPRESS_RUN_URL" >> $GITHUB_ENV
+          # Capture Cypress URL from the logs
+          CYPRESS_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' cypress-run-logs.txt)
+          echo "Cypress URL: $CYPRESS_URL"
 
   error-handler:
     runs-on: ubuntu-latest
