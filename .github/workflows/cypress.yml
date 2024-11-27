@@ -32,16 +32,23 @@ jobs:
         id: cypress-run
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
-          
-      - name: List all files and directories
+
+      - name: Save and print Cypress dashboard URL
         if: ${{ always() }}
+        id: save_url
         run: |
-          echo "Checking current working directory..."
-          pwd
-          echo "Listing all files and directories in the current directory..."
-          ls -al
-          echo "Recursive listing of all files and directories..."
-          find . -type d -print -exec ls -al {} \;
+          # Extract the Cypress run ID from the results.json file
+          CYPRESS_RUN_ID=$(cat cypress/results.json | jq -r '.runId')
+    
+          # Build the Cypress dashboard URL
+          CYPRESS_URL="https://cloud.cypress.io/projects/${{ secrets.CYPRESS_PROJECT_ID }}/runs/${CYPRESS_RUN_ID}"
+     
+          # Print the URL to the GitHub Actions log
+          echo "Cypress Run URL: $CYPRESS_URL"
+    
+          # Optionally, save the URL to an environment variable for future use
+          echo "CYPRESS_RUN_URL=$CYPRESS_URL" >> $GITHUB_ENV
+
 
   error-handler:
     runs-on: ubuntu-latest
