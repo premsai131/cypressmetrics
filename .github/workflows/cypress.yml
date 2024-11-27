@@ -41,6 +41,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: mocha-reports
-          path: cypress/reports/mocha/Regression/.jsons/*
+          path: cypress/reports/mocha/Regression/.jsons
           if-no-files-found: warn
           include-hidden-files: false
