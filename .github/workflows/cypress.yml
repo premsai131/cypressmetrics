@@ -70,6 +70,8 @@ jobs:
           npm install
 
           echo "Running error handler for failures..."
+          RUN_ID=$(echo "$GITHUB_STEP_SUMMARY" | grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' | grep -o '[0-9]*')
+          echo "run id: $RUN_ID"
           CYPRESS_RUN_NUMBER=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' ../cypress-output.log | grep -o '[0-9]*$' || echo "not_found")
           echo "Cypress Run Number: $CYPRESS_RUN_NUMBER"
 
