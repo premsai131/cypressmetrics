@@ -34,16 +34,19 @@ jobs:
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
           pwd
           echo "cypresSS"
-          ls -la cypress
-          echo "reports"
-          ls -la reports
+          ls -la cypress/reports
+          
+          echo "mocha"
+          ls -la cypress/reports/mocha/Regression/.jsons
+          
+
 
       # Step 5: Cache Mocha reports
       - name: Cache Mocha Reports
         if: ${{ always() }}
         uses: actions/cache@v3
         with:
-          path: reports/mocha/
+          path: cypress/reports/mocha/
           key: mocha-reports-${{ github.run_id }}
           restore-keys: mocha-reports-
 
