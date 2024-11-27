@@ -39,6 +39,21 @@ jobs:
         with:
           name: cypress-output
           path: cypress-output.log
+      - name: Capture Cypress Run ID from Console Output
+        id: capture-run-id
+        run: |
+          # Capture the Cypress Run ID from the console output
+          CYPRESS_RUN_URL=$(cat $GITHUB_STEP_SUMMARY | grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' | grep -o '[0-9]*' || echo "not_found")
+          
+          if [ "$CYPRESS_RUN_URL" == "not_found" ]; then
+            echo "Cypress Run ID not found in the logs."
+            exit 1
+          fi
+
+          echo "Cypress Run ID: $CYPRESS_RUN_URL"
+
+          # Set the Cypress Run ID as a GitHub environment variable for use in future steps
+          echo "CYPRESS_RUN_ID=$CYPRESS_RUN_URL" >> $GITHUB_ENV
 
   error-handler:
     runs-on: ubuntu-latest
