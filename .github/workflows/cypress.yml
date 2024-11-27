@@ -27,24 +27,45 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Run Cypress tests and capture runId
+      # Step 4: Run Cypress tests and generate Mocha reports
       - name: Run Cypress tests
         id: cypress-run
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
+          mkdir -p cypress/reports/mocha/Regression # Ensure path exists
+          # Simulate Mocha report creation (replace with actual generation command)
+          echo "Sample Mocha Report" > cypress/reports/mocha/Regression/report.html
 
+      # Step 5: Upload Mocha reports as artifacts
+      - name: Upload Mocha Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: mocha-reports
+          path: cypress/reports/mocha/ # Upload the whole folder
 
   error-handler:
     runs-on: ubuntu-latest
     needs: cypress-run
     if: ${{ failure() }} # Runs only if any upstream job (cypress-run) fails
-    steps:       
+    steps:
+      # Step 1: Download Mocha Reports artifact
+      - name: Download Mocha Reports
+        uses: actions/download-artifact@v3
+        with:
+          name: mocha-reports
+          path: cypress/reports/mocha/ # Download to the same path
+
+      # Step 2: Debug directory contents
+      - name: Debug Mocha Reports
+        run: |
+          echo "Mocha Reports Directory Contents:"
+          ls -R cypress/reports/mocha/
+
+      # Step 3: Run Error Handler
       - name: Run Error Handler
         run: |
           echo "Setting up Node.js environment..."
           node -v || (echo "Node.js not found, setting it up..." && nvm install 16)
-          pwd
-          ls -l | grep '^d'
 
           echo "Installing dependencies..."
           cd ./failure-analysis-automation
@@ -52,9 +73,6 @@ jobs:
           ls -la cypress
 
           GITHUB_RUN_ID="${{ github.run_id }}"
-
           echo "GitHub Run ID: $GITHUB_RUN_ID"
           
-          npx ts-node cypress/errorHandler.ts 
-
-          
+          npx ts-node cypress/errorHandler.ts
