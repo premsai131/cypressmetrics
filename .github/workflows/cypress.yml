@@ -33,21 +33,22 @@ jobs:
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
 
-      - name: Save and print Cypress dashboard URL
-        if: ${{ always() }}
-        id: save_url
+      - name: Capture Recorded Run URL
+        id: capture-url
         run: |
-          # Extract the Cypress run ID from the results.json file
-          CYPRESS_RUN_ID=$(cat cypress/results.json | jq -r '.runId')
-    
-          # Build the Cypress dashboard URL
-          CYPRESS_URL="https://cloud.cypress.io/projects/${{ secrets.CYPRESS_PROJECT_ID }}/runs/${CYPRESS_RUN_ID}"
-     
-          # Print the URL to the GitHub Actions log
-          echo "Cypress Run URL: $CYPRESS_URL"
-    
-          # Optionally, save the URL to an environment variable for future use
-          echo "CYPRESS_RUN_URL=$CYPRESS_URL" >> $GITHUB_ENV
+          # Capture the logs while keeping existing Cypress run configuration intact
+          # Using tee to output to console and save logs in a file
+          npx cypress run | tee cypress-output.log
+
+          # Extract the URL from the log file
+          CYPRESS_LOG_FILE=cypress-output.log
+          CYPRESS_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' $CYPRESS_LOG_FILE)
+
+          # Output the URL for future steps
+          echo "Recorded Run URL: $CYPRESS_URL"
+          
+          # Save the URL to an environment variable for use in subsequent steps
+          echo "cypress_url=$CYPRESS_URL" >> $GITHUB_ENV
 
 
   error-handler:
