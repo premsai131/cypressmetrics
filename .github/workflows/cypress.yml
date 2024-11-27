@@ -34,20 +34,35 @@ jobs:
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 | tee cypress-output.log
      
       # Step 5: Capture Cypress Run Number
-      - name: Capture Cypress Run Number
-        id: capture-run-number
-        run: |
-          # Capture the Cypress run number from the cypress-output.log
-          CYPRESS_RUN_NUMBER=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' cypress-output.log | grep -o '[0-9]*$' || echo "not_found")
-          echo "Current directory: $(pwd)"  # Debugging: Print current directory
-          echo "Listing files in failure-analysis-automation directory:"
-          ls -l  # List files to verify the correct files and paths
-          
-
-          # Debugging line - ensure the run number is correctly captured
-          echo "CYPRESS_RUN_NUMBER=$CYPRESS_RUN_NUMBER"
-          echo "CYPRESS_RUN_NUMBER=$CYPRESS_RUN_NUMBER" >> $GITHUB_ENV
+      - name: Set up Node.js
+        if: ${{ failure() }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
       
-      - name: Capture Cypress Run Number
+      - name: Install Dependencies
+        if: ${{ failure() }}
         run: |
-          echo "The Cypress Run Number is: ${{ env.CYPRESS_RUN_NUMBER }}"
+          echo "Debug: Checking current directory before installing dependencies"
+          pwd
+          echo "Debug: Listing contents of current directory"
+          ls -la
+          cd ./failure-analysis-automation
+          echo "Debug: Inside failure-analysis-automation directory"
+          pwd
+          echo "Debug: Listing contents of failure-analysis-automation directory"
+          ls -la
+          echo "Installing npm dependencies..."
+          npm install
+      
+      - name: Run Cypress Error Handler
+        if: ${{ failure() }}
+        run: |
+          echo "Debug: Checking current directory"
+          pwd
+          echo "Debug: Listing contents of current directory"
+          ls -la
+          CYPRESS_RUN_NUMBER=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*/runs/[0-9]*' cypress-output.log | grep -o '[0-9]*$' || echo "not_found")
+          
+          echo "Running error handler for failures..."
+          npx ts-node cypress/errorHandler.ts blitz Regression $CYPRESS_RUN_NUMBER wrt
