@@ -43,6 +43,7 @@ jobs:
         run: |
           echo "Setting up Node.js environment..."
           node -v || (echo "Node.js not found, setting it up..." && nvm install 16)
+          pwd
           ls 
           ls -la
 
