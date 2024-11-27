@@ -33,21 +33,14 @@ jobs:
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
           
-      - name: Capture Cypress URL from Logs
-        if: ${{ always() }}
-        id: capture_url
+      - name: List all files and directories
         run: |
-          # Save the logs to a file (to capture the Cypress URL printed during the test run)
-          echo "Capturing Cypress URL from logs..."
-          CYPRESS_LOGS=$(cat $GITHUB_ENV | grep "https://cloud.cypress.io/projects/")
-          echo "Captured logs: $CYPRESS_LOGS"
-
-          # Extract Cypress URL from the logs
-          CYPRESS_URL=$(echo "$CYPRESS_LOGS" | grep -o 'https://cloud.cypress.io/projects/[^ ]*' | head -n 1)
-          echo "Cypress URL: $CYPRESS_URL"
-          
-          # Save the Cypress URL to be used in another job
-          echo "::set-output name=cypress_url::$CYPRESS_URL"
+          echo "Checking current working directory..."
+          pwd
+          echo "Listing all files and directories in the current directory..."
+          ls -al
+          echo "Recursive listing of all files and directories..."
+          find . -type d -print -exec ls -al {} \;
 
   error-handler:
     runs-on: ubuntu-latest
