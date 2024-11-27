@@ -19,6 +19,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+
       # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
@@ -31,14 +36,14 @@ jobs:
           echo "Listing reports directory"
           ls -la cypress/reports
           echo "Listing mocha/Regression directory"
-          ls -la cypress/reports/mocha/Regression/.jsons
+          ls -la cypress/reports/mocha/Regression/Regression/.jsons
 
       # Step 5: Upload Mocha Reports as an artifact
       - name: Upload Mocha Reports Artifact
         uses: actions/upload-artifact@v3
         with:
           name: mocha-reports
-          path: cypress/reports/mocha/Regression/.jsons  # Path to the generated report files
+          path: cypress/reports/mocha/Regression/Regression/.jsons/report.json  # Correct path to the report file
 
   error-handler:
     runs-on: ubuntu-latest
