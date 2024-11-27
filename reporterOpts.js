@@ -2,7 +2,7 @@ const testType = process.env.TEST_TYPE
 module.exports = {
     "reporterEnabled": "cypress-mochawesome-reporter",
     "cypressMochawesomeReporterReporterOptions": {
-        "reportDir": `cypress/reports/mocha/${testType}`,
+        "reportDir": `cypress/reports/mocha/Regression`,
         "reportFilename": "report",
         "embeddedScreenshots": false,
         "ignoreVideos":true,
