@@ -31,7 +31,7 @@ jobs:
           echo "Listing reports directory"
           ls -la cypress/reports
           echo "Listing mocha/Regression directory"
-          ls -la cypress/reports/mocha/Regression/Regression/.jsons
+          ls -la cypress/reports/mocha/Regression/.jsons
 
       # Step 5: Upload Mocha Reports as an artifact
       - name: Upload Mocha Reports Artifact
