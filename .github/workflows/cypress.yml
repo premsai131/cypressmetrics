@@ -42,7 +42,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/cache@v3
         with:
-          path: cypress/reports/mocha/
+          path: reports/mocha/
           key: mocha-reports-${{ github.run_id }}
           restore-keys: mocha-reports-
 
@@ -63,7 +63,7 @@ jobs:
       - name: Debug Mocha Reports
         run: |
           echo "Mocha Reports Directory Contents:"
-          ls -R cypress/reports/mocha/
+          ls -R reports/mocha/
 
       # Step 3: Run Error Handler
       - name: Run Error Handler
