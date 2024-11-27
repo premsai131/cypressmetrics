@@ -34,7 +34,7 @@ jobs:
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
           
       - name: List all files and directories
-        if: ${{ always }}
+        if: ${{ always() }}
         run: |
           echo "Checking current working directory..."
           pwd
