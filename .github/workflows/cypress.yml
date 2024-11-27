@@ -33,45 +33,14 @@ jobs:
           echo "Listing mocha/Regression directory"
           ls -la cypress/reports/mocha/Regression/.jsons
 
+      - name: Confirm current working directory
+        run: pwd
+
       # Step 5: Upload Mocha Reports as an artifact
       - name: Upload Mocha Reports Artifact
         uses: actions/upload-artifact@v3
         with:
           name: mocha-reports
-          path: cypress/reports/mocha/Regression/.jsons/  # Correct path to the report file
-
-  error-handler:
-    runs-on: ubuntu-latest
-    needs: cypress-run  # Ensure this job runs after the cypress-run job
-    if: ${{ always() }}  # Runs only if any upstream job (cypress-run) fails
-    steps:
-      # Step 1: Checkout the code
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Step 2: Download Mocha Reports Artifact from the previous job
-      - name: Download Mocha Reports Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: mocha-reports
-          path: ./cypress/reports/mocha/Regression/  # Path to download the artifact to
-
-      # Step 3: Debug the downloaded report directory
-      - name: Debug Mocha Reports Directory
-        run: |
-          echo "Mocha Reports Directory Contents:"
-          ls -R ./cypress/reports/mocha/Regression/
-
-      # Step 4: Run Error Handler
-      - name: Run Error Handler
-        run: |
-          echo "Setting up Node.js environment..."
-          node -v || (echo "Node.js not found, setting it up..." && nvm install 16)
-          echo "Installing dependencies..."
-          cd ./failure-analysis-automation
-          npm install
-          ls -la cypress
-          GITHUB_RUN_ID="${{ github.run_id }}"
-          echo "GitHub Run ID: $GITHUB_RUN_ID"
-          
-          npx ts-node cypress/errorHandler.ts
+          path: cypress/reports/mocha/Regression/.jsons/report.json  # Specify the file explicitly
+          if-no-files-found: warn
+          include-hidden-files: false
