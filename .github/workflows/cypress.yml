@@ -34,17 +34,12 @@ jobs:
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 | tee cypress-output.log
           
       # Step 5: Upload artifacts (Optional: in case needed in the next job)
-      - name: Upload Cypress Output
-        uses: actions/upload-artifact@v3
-        with:
-          name: cypress-output
-          path: cypress-output.log
-
       - name: Capture Cypress Run URL
         run: |
-          # Capture Cypress URL from the logs
-          CYPRESS_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' cypress-run-logs.txt)
+          # Capture the Cypress URL from the action's output
+          CYPRESS_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' <<< "${{ steps.cypress_run.outputs.cypress_url }}")
           echo "Cypress URL: $CYPRESS_URL"
+          echo "::set-output name=cypress_url::$CYPRESS_URL"
 
   error-handler:
     runs-on: ubuntu-latest
