@@ -32,6 +32,7 @@ jobs:
         id: cypress-run
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
+          pwd
           echo "cypresSS"
           ls -la cypress
           echo "reports"
