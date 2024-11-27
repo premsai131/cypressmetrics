@@ -40,10 +40,10 @@ jobs:
           echo "mocha"
           ls -la cypress/reports/mocha/Regression/.jsons
           
-      # Step 5: Set the report path for the next job
+      # Step 5: Set the report path for the next job using environment files
       - name: Set Report Path
         id: set-report-path
-        run: echo "::set-output name=report-path::$(pwd)/cypress/reports/mocha/Regression/.jsons"
+        run: echo "REPORT_PATH=$(pwd)/cypress/reports/mocha/Regression/.jsons" >> $GITHUB_ENV
 
   error-handler:
     runs-on: ubuntu-latest
@@ -57,7 +57,8 @@ jobs:
       # Step 2: Copy Mocha Reports from the previous job's output
       - name: Copy Mocha Report
         run: |
-          cp -R ${{ needs.cypress-run.outputs.report-path }}/* cypress/reports/mocha/Regression/.jsons
+          echo "Copying reports from: $REPORT_PATH"
+          cp -R $REPORT_PATH/* cypress/reports/mocha/Regression/.jsons
 
       # Step 3: Debug directory contents
       - name: Debug Mocha Reports
