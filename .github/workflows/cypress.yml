@@ -34,15 +34,11 @@ jobs:
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
 
       - name: Capture Recorded Run URL
+        if: ${{ always() }}
         id: capture-url
         run: |
-          # Capture the logs while keeping existing Cypress run configuration intact
-          # Using tee to output to console and save logs in a file
-          npx cypress run | tee cypress-output.log
-
-          # Extract the URL from the log file
-          CYPRESS_LOG_FILE=cypress-output.log
-          CYPRESS_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' $CYPRESS_LOG_FILE)
+          # Extract the Recorded Run URL directly from Cypress logs in the GitHub Actions output
+          CYPRESS_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' $GITHUB_STEP_SUMMARY)
 
           # Output the URL for future steps
           echo "Recorded Run URL: $CYPRESS_URL"
