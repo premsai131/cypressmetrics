@@ -61,7 +61,7 @@ jobs:
         run: |
           echo "Copying reports from: $REPORT_PATH"
           ls -la $REPORT_PATH  # Debug: List contents of $REPORT_PATH
-          cp -R $REPORT_PATH/* cypress/reports/mocha/Regression/.jsons
+          find $REPORT_PATH -name "*.json" -exec cp {} cypress/reports/mocha/Regression/.jsons \;
 
       # Step 3: Debug directory contents
       - name: Debug Mocha Reports
