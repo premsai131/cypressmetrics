@@ -28,7 +28,7 @@
     "path": "^0.12.7",
     "puppeteer": "^4.0.0",
     "ts-node": "^10.2.0",
-    "typescript": "^3.8.3",
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
     "@cypress/skip-test": "^2.6.1",
