@@ -32,12 +32,10 @@ jobs:
         id: cypress-run
         run: |
           npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
-          mkdir -p cypress/reports/mocha/Regression # Ensure path exists
-          # Simulate Mocha report creation (replace with actual generation command)
-          echo "Sample Mocha Report" > cypress/reports/mocha/Regression/report.html
 
       # Step 5: Upload Mocha reports as artifacts
       - name: Upload Mocha Reports
+        if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: mocha-reports
