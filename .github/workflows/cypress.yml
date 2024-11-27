@@ -37,6 +37,7 @@ jobs:
         if: ${{ always() }}
         id: capture-url
         run: |
+          cat cypress-output.log
           # Extract the Recorded Run URL directly from Cypress logs in the GitHub Actions output
           CYPRESS_URL=$(grep -o 'https://cloud.cypress.io/projects/[^ ]*' $GITHUB_STEP_SUMMARY)
 
