@@ -39,6 +39,9 @@ jobs:
     needs: cypress-run
     if: ${{ failure() }} # Runs only if any upstream job (cypress-run) fails
     steps:
+      - name: checkout code 
+        uses: actions/checkout@v4
+       
       - name: Run Error Handler
         run: |
           echo "Setting up Node.js environment..."
