@@ -51,5 +51,5 @@ jobs:
         with:
           name: mocha-reports
           path: |
-            $(cat json_files.txt) # This dynamically uploads the files found in the previous step
+            cypress/reports/mocha/Regression
           if-no-files-found: warn
