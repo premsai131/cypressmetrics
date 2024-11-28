@@ -51,5 +51,5 @@ jobs:
         with:
           name: mocha-reports
           path: |
-            cypress/reports/mocha/Regression
+            cypress/reports/mocha/Regression/.json/*
           if-no-files-found: warn
