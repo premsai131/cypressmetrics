@@ -31,8 +31,8 @@ jobs:
           echo "Listing mocha/Regression directory"
           ls -la cypress/reports/mocha/Regression/.jsons
 
-      # Step 4: Upload Mocha Reports as an artifact
-      - name: Upload JSON Files as Artifact
+      # Step 4: Dynamically Find JSON Files and Upload as Artifact
+      - name: Find and Upload JSON Files as Artifact
         run: |
           files=$(find cypress/reports/mocha/Regression/.jsons -type f -name "*.json")
           if [ -z "$files" ]; then
@@ -41,9 +41,15 @@ jobs:
           else
             echo "Found JSON files:"
             echo "$files"
-            for file in $files; do
-              echo "Uploading $file"
-              # Use the upload-artifact action to upload each file
-              echo "artifact=$file" >> $GITHUB_ENV
-            done
           fi
+          echo "$files" > json_files.txt
+        shell: bash
+
+      # Step 5: Upload Found JSON Files
+      - name: Upload JSON Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: mocha-reports
+          path: |
+            $(cat json_files.txt) # This dynamically uploads the files found in the previous step
+          if-no-files-found: warn
