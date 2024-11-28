@@ -19,28 +19,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 3: Install dependencies
+      # Step 2: Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Run Cypress tests and generate Mocha reports
+      # Step 3: Run Cypress tests and generate Mocha reports
       - name: Run Cypress tests
         id: cypress-run
         run: |
-          npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81 
+          npx cypress run --record --key 349e203f-44fe-4e1c-91b4-1869bd99af81
           echo "Listing reports directory"
           ls -la cypress/reports
           echo "Listing mocha/Regression directory"
           ls -la cypress/reports/mocha/Regression/.jsons
 
+      # Step 4: Confirm current working directory
       - name: Confirm current working directory
         run: pwd
 
       # Step 5: Upload Mocha Reports as an artifact
-      - name: Upload Mocha Reports Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: mocha-reports
-          path: cypress/reports/mocha/Regression/.jsons
-          if-no-files-found: warn
-          include-hidden-files: false
+      - name: Upload JSON Files as Artifact
+        run: |
+          files=$(find cypress/reports/mocha/Regression/.jsons -type f -name "*.json")
+          if [ -z "$files" ]; then
+            echo "No JSON files found"
+            exit 1
+          else
+            echo "Found JSON files: $files"
+            # Upload the found files as an artifact using a loop
+            for file in $files; do
+              echo "Uploading $file"
+              # You can upload each file separately or use the upload-artifact command to include them all at once
+            done
