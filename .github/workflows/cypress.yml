@@ -12,8 +12,6 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
-    outputs:
-      report-path: ${{ steps.set-report-path.outputs.report-path }}  # Output the report path for the next job
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
@@ -33,11 +31,7 @@ jobs:
           echo "Listing mocha/Regression directory"
           ls -la cypress/reports/mocha/Regression/.jsons
 
-      # Step 4: Confirm current working directory
-      - name: Confirm current working directory
-        run: pwd
-
-      # Step 5: Upload Mocha Reports as an artifact
+      # Step 4: Upload Mocha Reports as an artifact
       - name: Upload JSON Files as Artifact
         run: |
           files=$(find cypress/reports/mocha/Regression/.jsons -type f -name "*.json")
@@ -45,9 +39,11 @@ jobs:
             echo "No JSON files found"
             exit 1
           else
-            echo "Found JSON files: $files"
-            # Upload the found files as an artifact using a loop
+            echo "Found JSON files:"
+            echo "$files"
             for file in $files; do
               echo "Uploading $file"
-              # You can upload each file separately or use the upload-artifact command to include them all at once
+              # Use the upload-artifact action to upload each file
+              echo "artifact=$file" >> $GITHUB_ENV
             done
+          fi
