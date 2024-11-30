@@ -9,46 +9,53 @@ on:
       - main
   workflow_dispatch: # Enables manual triggering of the workflow
 
-jobs:    
+jobs:
   cypress-run:
-    env: 
-        CYPRESS_PROJECT_ID: 'qdjmfg'
-        CYPRESS_RECORD_KEY: '349e203f-44fe-4e1c-91b4-1869bd99af81'
+    env:
+      CYPRESS_PROJECT_ID: 'qdjmfg'
+      CYPRESS_RECORD_KEY: '349e203f-44fe-4e1c-91b4-1869bd99af81'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        containers: [1,2]
+        container: [1, 2] # Correctly define containers
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Cypress run for Account-Admin
+
+      # Step 2: Run Cypress tests
+      - name: Cypress Run for Matrix Container
         uses: cypress-io/github-action@v6
         with:
           record: 'true'
           parallel: 'true'
           browser: 'chrome'
-        env: 
-          MATRIX_CONTAINER: ${{ matrix.container }} 
+        env:
+          MATRIX_CONTAINER: ${{ matrix.container }} # Pass matrix container to Cypress
+
+      # Step 3: Verify Report Files
       - name: Verify Report Files
         run: |
-          ls -l cypress/reports/mocha/Regression
-          echo "Checking directory: cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons/"
-          ls -l cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons/ || echo "Directory or files not found."
-      
+          echo "Checking reports directory for container ${{ matrix.container }}..."
+          ls -l cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons || echo "Directory or files not found."
+
       # Step 4: Create Zip Archive of Mocha Reports
       - name: Zip Mocha Report Files
-        if: ${{ always() }}  
+        if: ${{ always() }}
         run: |
           mkdir -p zipped-reports
-          zip -r zipped-reports/mocha-reports-${{ matrix.container }}.zip cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons/*
-          
-      - name: Upload Artifacts if Test Failed
-        if: ${{ always() }}  
+          if [ -d "cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons" ]; then
+            zip -r zipped-reports/mocha-reports-${{ matrix.container }}.zip cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons/*
+          else
+            echo "No files to zip for container ${{ matrix.container }}."
+          fi
+
+      # Step 5: Upload Artifacts if Test Failed
+      - name: Upload Artifacts
+        if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: test-results-${{ matrix.container }}
-          retention-days: 1 ## After 24 hours the artifacts will be automatically cleanedup since there are only needed for slack alerting.
+          retention-days: 1
           path: zipped-reports/mocha-reports-${{ matrix.container }}.zip
