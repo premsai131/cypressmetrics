@@ -4,7 +4,7 @@ const matrixContainer = process.env.MATRIX_CONTAINER || 'default'; // Add MATRIX
 module.exports = {
   reporterEnabled: "cypress-mochawesome-reporter",
   cypressMochawesomeReporterReporterOptions: {
-    reportDir: `cypress/reports/mocha/Regression-${matrixContainer}`, // Unique directory
+    reportDir: `cypress/reports/mocha/Regression/${matrixContainer}`, // Unique directory
     reportFilename: "report",
     embeddedScreenshots: false,
     ignoreVideos: true,
