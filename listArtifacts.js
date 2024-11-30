@@ -18,6 +18,20 @@ fs.readdir(directoryPath, (err, files) => {
 
   console.log(`Contents of directory ${directoryPath}:`);
   files.forEach((file) => {
-    console.log(file);
+    const filePath = path.join(directoryPath, file);
+    if (fs.statSync(filePath).isDirectory()) {
+      console.log(`\nContents of directory: ${filePath}`);
+      fs.readdir(filePath, (err, nestedFiles) => {
+        if (err) {
+          console.error(`Error reading nested directory ${filePath}:`, err);
+          process.exit(1);
+        }
+        nestedFiles.forEach((nestedFile) => {
+          console.log(nestedFile);
+        });
+      });
+    } else {
+      console.log(file);
+    }
   });
 });
