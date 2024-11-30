@@ -35,15 +35,15 @@ jobs:
       - name: Verify Report Files
         run: |
           ls -l cypress/reports/mocha/Regression
-          echo "Checking directory: cypress/reports/mocha/Regression-${{ matrix.container }}/.jsons/"
-          ls -l cypress/reports/mocha/Regression-${{ matrix.container }}/.jsons/ || echo "Directory or files not found."
+          echo "Checking directory: cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons/"
+          ls -l cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons/ || echo "Directory or files not found."
       
       # Step 4: Create Zip Archive of Mocha Reports
       - name: Zip Mocha Report Files
         if: ${{ always() }}  
         run: |
           mkdir -p zipped-reports
-          zip -r zipped-reports/mocha-reports-${{ matrix.container }}.zip cypress/reports/mocha/Regression-${{ matrix.container }}/.jsons/*
+          zip -r zipped-reports/mocha-reports-${{ matrix.container }}.zip cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons/*
           
       - name: Upload Artifacts if Test Failed
         if: ${{ always() }}  
