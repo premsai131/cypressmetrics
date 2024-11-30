@@ -101,4 +101,4 @@ jobs:
       - name: List Downloaded Artifacts
         run: |
           echo "Listing contents of directory: /home/runner/work/cypressmetrics/cypressmetrics/downloaded-artifacts"
-          node listArtifacts.js /home/runner/work/cypressmetrics/cypressmetrics/downloaded-artifacts
+          node listArtifacts.js ./downloaded-artifacts
