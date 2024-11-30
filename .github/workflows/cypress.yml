@@ -86,4 +86,6 @@ jobs:
 
       # Step 4: List the contents of downloaded artifacts
       - name: List Downloaded Artifacts
-        run: node listArtifacts.js downloaded-artifacts
+        run: |
+          echo "Listing contents of directory: /home/runner/work/cypressmetrics/cypressmetrics/downloaded-artifacts"
+          node listArtifacts.js /home/runner/work/cypressmetrics/cypressmetrics/downloaded-artifacts
