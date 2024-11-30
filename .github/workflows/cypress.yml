@@ -77,6 +77,15 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: downloaded-artifacts
+          
+      - name: Unzip Artifacts
+        run: |
+          for dir in downloaded-artifacts/*; do
+            if [ -d "$dir" ]; then
+              echo "Unzipping $dir..."
+              unzip -o "$dir/*.zip" -d "$dir/unzipped"
+            fi
+          done
 
       # Step 2: Set up Node.js environment
       - name: Install Node.js
