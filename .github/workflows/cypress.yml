@@ -68,6 +68,10 @@ jobs:
     needs: cypress-run
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Check out repository to access the JavaScript script
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
       # Step 1: Create a directory to download artifacts
       - name: Download Artifacts
         uses: actions/download-artifact@v3
@@ -80,9 +84,9 @@ jobs:
         with:
           node-version: '16' # Specify a compatible Node.js version
 
-      # Step 3: Check out repository to access the JavaScript script
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      # Step 2: Debug the downloaded directory
+      - name: Debug directory contents
+        run: ls -la /home/runner/work/cypressmetrics/cypressmetrics/downloaded-artifacts
 
       # Step 4: List the contents of downloaded artifacts
       - name: List Downloaded Artifacts
