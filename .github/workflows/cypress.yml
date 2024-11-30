@@ -34,8 +34,8 @@ jobs:
           MATRIX_CONTAINER: ${{ matrix.container }} 
       - name: Verify Report Files
         run: |
-          echo "Checking directory: cypress/reports/mocha/Regression-${{ matrix.container }}/.jsons/"
           ls -l cypress/reports/mocha/Regression
+          echo "Checking directory: cypress/reports/mocha/Regression-${{ matrix.container }}/.jsons/"
           ls -l cypress/reports/mocha/Regression-${{ matrix.container }}/.jsons/ || echo "Directory or files not found."
       
       # Step 4: Create Zip Archive of Mocha Reports
