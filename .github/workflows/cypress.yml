@@ -64,6 +64,7 @@ jobs:
 
   # Job to download and list artifacts
   download-artifacts:
+    if: ${{ always() }}
     needs: cypress-run
     runs-on: ubuntu-latest
     steps:
