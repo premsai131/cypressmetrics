@@ -30,6 +30,8 @@ jobs:
           record: 'true'
           parallel: 'true'
           browser: 'chrome'
+        env: 
+          MATRIX_CONTAINER: ${{ matrix.container }} 
       # Step 4: Create Zip Archive of Mocha Reports
       - name: Zip Mocha Report Files
         if: ${{ always() }}  
