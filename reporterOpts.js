@@ -1,10 +1,9 @@
-const testType = process.env.TEST_TYPE || 'DefaultTestType'; // Default to avoid undefined
-const matrixContainer = process.env.MATRIX_CONTAINER || 'default'; // Add MATRIX_CONTAINER
+const matrixContainer = process.env.MATRIX_CONTAINER || 'default'; // Add MATRIX_CONTAINER fallback
 
 module.exports = {
   reporterEnabled: "cypress-mochawesome-reporter",
   cypressMochawesomeReporterReporterOptions: {
-    reportDir: `cypress/reports/mocha/Regression/${matrixContainer}`, // Unique directory
+    reportDir: `cypress/reports/mocha/Regression/${matrixContainer}`, // Use matrixContainer for directory
     reportFilename: "report",
     embeddedScreenshots: false,
     ignoreVideos: true,
