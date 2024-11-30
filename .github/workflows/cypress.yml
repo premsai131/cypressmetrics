@@ -1,4 +1,4 @@
-name: Run Cypress Tests
+name: Run Cypress Tests and List Artifacts
 
 on:
   push:
@@ -10,6 +10,7 @@ on:
   workflow_dispatch: # Enables manual triggering of the workflow
 
 jobs:
+  # Job to run Cypress tests and upload artifacts
   cypress-run:
     env:
       CYPRESS_PROJECT_ID: 'qdjmfg'
@@ -18,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        container: [1, 2] # Correctly define containers
+        container: [1, 2]
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
@@ -32,10 +33,11 @@ jobs:
           parallel: 'true'
           browser: 'chrome'
         env:
-          MATRIX_CONTAINER: ${{ matrix.container }} # Pass matrix container to Cypress
+          MATRIX_CONTAINER: ${{ matrix.container }}
 
       # Step 3: Verify Report Files
       - name: Verify Report Files
+        if: ${{ always() }}
         run: |
           echo "Checking reports directory for container ${{ matrix.container }}..."
           ls -l cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons || echo "Directory or files not found."
@@ -51,7 +53,7 @@ jobs:
             echo "No files to zip for container ${{ matrix.container }}."
           fi
 
-      # Step 5: Upload Artifacts if Test Failed
+      # Step 5: Upload Artifacts
       - name: Upload Artifacts
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
@@ -59,3 +61,28 @@ jobs:
           name: test-results-${{ matrix.container }}
           retention-days: 1
           path: zipped-reports/mocha-reports-${{ matrix.container }}.zip
+
+  # Job to download and list artifacts
+  download-artifacts:
+    needs: cypress-run
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Create a directory to download artifacts
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: downloaded-artifacts
+
+      # Step 2: Set up Node.js environment
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Specify a compatible Node.js version
+
+      # Step 3: Check out repository to access the JavaScript script
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 4: List the contents of downloaded artifacts
+      - name: List Downloaded Artifacts
+        run: node listArtifacts.js downloaded-artifacts
