@@ -190,4 +190,4 @@ jobs:
           
           npm install
           echo "Running errorHandler.ts with downloaded-artifacts as an argument..."
-          npx ts-node cypress/errorHandler.ts downloaded-artifacts
+          npx ts-node cypress/errorHandler.ts ../downloaded-artifacts
