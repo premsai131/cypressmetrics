@@ -33,8 +33,6 @@ jobs:
           record: 'true'
           parallel: 'true'
           browser: 'chrome'
-        env:
-          MATRIX_CONTAINER: ${{ matrix.containers }}
 
       # Step 3: Verify Report Files
       - name: Verify Report Files
