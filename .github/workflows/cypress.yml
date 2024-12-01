@@ -71,13 +71,13 @@ jobs:
       # Step 1: Check out repository to access the JavaScript script
       - name: Checkout Code
         uses: actions/checkout@v4
-        
-      # Step 1: Create a directory to download artifacts
+
+      # Step 2: Create a directory to download artifacts
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
           path: downloaded-artifacts
-          
+
       - name: Unzip Artifacts
         run: |
           for dir in downloaded-artifacts/*; do
@@ -87,23 +87,38 @@ jobs:
             fi
           done
 
-      # Step 2: Set up Node.js environment
+      # Step 3: Set up Node.js environment
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16' # Specify a compatible Node.js version
 
-      # Step 2: Debug the downloaded directory
+      # Step 4: Debug the downloaded directory
       - name: Debug directory contents
         run: ls -la /home/runner/work/cypressmetrics/cypressmetrics/downloaded-artifacts
 
-      # Step 4: List the contents of downloaded artifacts
-      - name: List Downloaded Artifacts
+      # Step 5: List the contents of downloaded artifacts
+      - name: Debug Full Directory Structure
         run: |
-          echo "Listing contents of directory: /home/runner/work/cypressmetrics/cypressmetrics/downloaded-artifacts"
           for dir in downloaded-artifacts/*; do
-           if [ -d "$dir/unzipped/cypress/reports/mocha/Regression" ]; then
-             echo "Contents of $dir/unzipped/cypress/reports/mocha/Regression:"
-             ls -R "$dir/unzipped/cypress/reports/mocha/Regression"
-           fi
+            if [ -d "$dir/unzipped/cypress/reports/mocha/Regression" ]; then
+              echo "Checking contents of $dir/unzipped/cypress/reports/mocha/Regression:"
+              for subdir in "$dir/unzipped/cypress/reports/mocha/Regression/"*; do
+                if [ -d "$subdir" ]; then
+                  echo "Contents of $subdir:"
+                  ls -R "$subdir"
+                  # Check for .jsons folder
+                  if [ -d "$subdir/.jsons" ]; then
+                    echo "Contents of $subdir/.jsons:"
+                    ls -la "$subdir/.jsons"
+                  else
+                    echo "No .jsons folder found in $subdir."
+                  fi
+                else
+                  echo "$subdir is not a directory."
+                fi
+              done
+            else
+              echo "No Regression directory found in $dir/unzipped/cypress/reports/mocha."
+            fi
           done
