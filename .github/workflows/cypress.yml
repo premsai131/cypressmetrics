@@ -47,10 +47,10 @@ jobs:
         if: ${{ always() }}
         run: |
           mkdir -p zipped-reports
-          if [ -d "cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons" ]; then
-            zip -r zipped-reports/mocha-reports-${{ matrix.container }}.zip cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons/*
+          if [ -d "cypress/reports/mocha/Regression/${{ matrix.containers }}/.jsons" ]; then
+            zip -r zipped-reports/mocha-reports-${{ matrix.containers }}.zip cypress/reports/mocha/Regression/${{ matrix.containers }}/.jsons/*
           else
-            echo "No files to zip for container ${{ matrix.container }}."
+            echo "No files to zip for container ${{ matrix.containers }}."
           fi
 
       # Step 5: Upload Artifacts
