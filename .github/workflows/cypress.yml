@@ -167,12 +167,12 @@ jobs:
             fi
           done
           
-      - name: check envs 
+      - name: check envs
         if: ${{ always() }}
         run: |
           current_hour=$(date +"%H")
           echo "Current Hour: $current_hour"
-      
+
           if [[ "$current_hour" == "21" ]]; then
             echo "env_name=blitzv2" >> $GITHUB_ENV
           elif [[ "$current_hour" == "23" ]]; then
@@ -185,13 +185,16 @@ jobs:
               echo "env_name=$environment_name" >> $GITHUB_ENV
             fi
           fi
-          ENV_NAME=$env_name
+
+          # Now access the environment variable set in the $GITHUB_ENV file
+          echo "Environment Name: ${{ env.env_name }}"
+
           CYPRESS_PROJECT_ID="${{ needs.cypress-run.outputs.cypress_project_id }}"
           GITHUB_RUN_ID="${{ github.run_id }}"
 
-          echo "Environment Name: $ENV_NAME"
           echo "Cypress Project ID: $CYPRESS_PROJECT_ID"
           echo "GitHub Run ID: $GITHUB_RUN_ID"
+
       # Step 4: Call the errorHandler.js script
       - name: Run Error Handler
         if: ${{ always() }}
