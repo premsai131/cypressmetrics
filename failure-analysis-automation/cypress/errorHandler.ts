@@ -1,16 +1,31 @@
 import fs from 'fs';
 import path from 'path';
 import { getLogsFromCoralogix, loadProperties, QUERY_TEMPLATE, sendToSlack } from '../utils/helpers';
-async function readJsonFilesFromDirectory(directoryPath: string) {
+async function readJsonFilesFromDirectory(directoryPath: string): Promise<any[]> {
     try {
-        const files = await fs.promises.readdir(directoryPath);
-        const jsonFiles = files.filter(file => file.endsWith('.json'));
-        const filePromises = jsonFiles.map(file => {
-            const filePath = path.join(directoryPath, file);
-            return fs.promises.readFile(filePath, 'utf8');
-        });
-        const fileContents = await Promise.all(filePromises);
-        const parsedResponses = fileContents.map(content => JSON.parse(content));
+        let parsedResponses: any[] = [];
+
+        const entries = await fs.promises.readdir(directoryPath, { withFileTypes: true });
+
+        for (const entry of entries) {
+            const fullPath = path.join(directoryPath, entry.name);
+
+            if (entry.isDirectory()) {
+                // Recursively process subdirectory
+                const subdirectoryResponses = await readJsonFilesFromDirectory(fullPath);
+                parsedResponses = parsedResponses.concat(subdirectoryResponses);
+            } else if (entry.isFile() && entry.name.endsWith('.json')) {
+                // Process JSON file
+                try {
+                    const fileContent = await fs.promises.readFile(fullPath, 'utf8');
+                    const jsonData = JSON.parse(fileContent);
+                    parsedResponses.push(jsonData);
+                } catch (parseError) {
+                    console.error(`Error parsing JSON from file ${fullPath}:`, parseError);
+                    throw parseError;
+                }
+            }
+        }
         return parsedResponses;
     } catch (error) {
         console.error("Error reading JSON files:", error);
@@ -251,10 +266,16 @@ async function processFailuresFromLogs(categorizedFailures: any[], config: any) 
 
 async function main() {
     try {
-        const env = process.argv[2];  // Environment name 
+       const resultDirectoryPath = process.argv[2]; // Path to the downloaded artifacts
+                if (!fs.existsSync(resultDirectoryPath)) {
+            throw new Error(`Directory path does not exist: ${resultDirectoryPath}`);
+        }
+        const env = process.argv[7];  // Environment name 
         const testType = process.argv[3];  // Test type 
         const cypressCloudRunNumber = process.argv[4];  // Cypress run number
         const cypressCloudProjectId = process.argv[5]; // cypress cloud project id
+        const jsonFiles = await readJsonFilesFromDirectory(resultDirectoryPath);
+
         const configPath = path.resolve(__dirname, "../../app_test/aws-config.properties");
         const directoryPath = path.join(__dirname, `../../app_test/cypress/reports/mocha/${testType}`);
         const jsonFiles = await readJsonFilesFromDirectory(directoryPath);
