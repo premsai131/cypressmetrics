@@ -30,15 +30,25 @@ jobs:
         id: set-default
         run: |
           current_hour=$(date +"%H")
-          echo "Hour Now: "$current_hour
-          if [[ "$current_hour" = "21" ]]; then
+          echo "Current Hour: $current_hour"
+          
+          if [[ "$current_hour" == "21" ]]; then
             echo "env_name=blitzv2" >> $GITHUB_OUTPUT
-          elif [[ "$current_hour" = "23" ]]; then
+          elif [[ "$current_hour" == "23" ]]; then
             echo "env_name=stagev2" >> $GITHUB_OUTPUT
           else
-            echo "env_name=${{ github.event.inputs.environment_name }}" >> $GITHUB_OUTPUT
+            environment_name=${{ github.event.inputs.environment_name }}
+            if [[ -z "$environment_name" ]]; then
+              echo "env_name=default-env" >> $GITHUB_OUTPUT
+            else
+              echo "env_name=$environment_name" >> $GITHUB_OUTPUT
+            fi
           fi
-          echo "Github Output: "$GITHUB_OUTPUT
+          
+          # Debugging: Output the file content
+          echo "GITHUB_OUTPUT content:"
+          cat $GITHUB_OUTPUT
+
   # Job to run Cypress tests and upload artifacts
   cypress-run:
     outputs:
