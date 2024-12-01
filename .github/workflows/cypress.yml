@@ -174,22 +174,22 @@ jobs:
           echo "Current Hour: $current_hour"
       
           if [[ "$current_hour" == "21" ]]; then
-            echo "env_name=blitzv2" >> $GITHUB_OUTPUT
+            echo "env_name=blitzv2" >> $GITHUB_ENV
           elif [[ "$current_hour" == "23" ]]; then
-            echo "env_name=stagev2" >> $GITHUB_OUTPUT
+            echo "env_name=stagev2" >> $GITHUB_ENV
           else
             environment_name=${{ github.event.inputs.environment_name }}
             if [[ -z "$environment_name" ]]; then
-              echo "env_name=default-env" >> $GITHUB_OUTPUT
+              echo "env_name=default-env" >> $GITHUB_ENV
             else
-              echo "env_name=$environment_name" >> $GITHUB_OUTPUT
+              echo "env_name=$environment_name" >> $GITHUB_ENV
             fi
           fi
           ENV_NAME=${{ env.env_name }}
           CYPRESS_PROJECT_ID="${{ needs.cypress-run.outputs.cypress_project_id }}"
           GITHUB_RUN_ID="${{ github.run_id }}"
 
-          echo "Environment Name: $ENV_NAME"
+          echo "Environment Name: $env_name"
           echo "Cypress Project ID: $CYPRESS_PROJECT_ID"
           echo "GitHub Run ID: $GITHUB_RUN_ID"
       - name: Debug Outputs
