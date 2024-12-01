@@ -102,8 +102,8 @@ jobs:
         run: |
           echo "Listing contents of directory: /home/runner/work/cypressmetrics/cypressmetrics/downloaded-artifacts"
           for dir in downloaded-artifacts/*; do
-           if [ -d "$dir/unzipped" ]; then
-             echo "Contents of $dir/unzipped:"
-             ls -R "$dir/unzipped"
+           if [ -d "$dir/unzipped/cypress/reports/mocha/Regression" ]; then
+             echo "Contents of $dir/unzipped/cypress/reports/mocha/Regression:"
+             ls -R "$dir/unzipped/cypress/reports/mocha/Regression"
            fi
           done
