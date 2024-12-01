@@ -174,4 +174,12 @@ jobs:
 
           echo "Environment Name: $ENV_NAME"
           echo "GitHub Run ID: $GITHUB_RUN_ID"
-
+      - name: Debug Outputs
+        run: |
+          echo "Raw outputs: ${{ toJson(needs.determine-environment.outputs) }}"
+          echo "Environment Name: ${{ needs.determine-environment.outputs.env_name }}"
+      # Step 4: Call the errorHandler.js script
+      - name: Run Error Handler
+        run: |
+          echo "Running errorHandler.js with downloaded-artifacts as an argument..."
+          node errorHandler.js downloaded-artifacts
