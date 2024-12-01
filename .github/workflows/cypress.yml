@@ -156,6 +156,9 @@ jobs:
               echo "No Regression directory found in $dir/unzipped/cypress/reports/mocha."
             fi
           done
+          
+      - name: check envs 
+        run: |
           ENV_NAME="${{ needs.determine-environment.outputs.env_name }}"
           CYPRESS_PROJECT_ID="${{ needs.cypress-run.outputs.cypress_project_id }}"
           GITHUB_RUN_ID="${{ github.run_id }}"
