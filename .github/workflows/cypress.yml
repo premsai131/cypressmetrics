@@ -173,9 +173,9 @@ jobs:
           current_hour=$(date +"%H")
           echo "Current Hour: $current_hour"
 
-          if [[ "$current_hour" == "21" ]]; then
+          if [[ "$current_hour" == "21" || "$current_hour" == "22" ]]; then
             echo "env_name=blitzv2" >> $GITHUB_ENV
-          elif [[ "$current_hour" == "23" ]]; then
+          elif [[ "$current_hour" == "23" || "$current_hour" == "24" ]]; then
             echo "env_name=stagev2" >> $GITHUB_ENV
           else
             environment_name=${{ github.event.inputs.environment_name }}
