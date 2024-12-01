@@ -33,14 +33,14 @@ jobs:
           parallel: 'true'
           browser: 'chrome'
         env:
-          MATRIX_CONTAINER: ${{ matrix.container }}
+          MATRIX_CONTAINER: ${{ matrix.containers }}
 
       # Step 3: Verify Report Files
       - name: Verify Report Files
         if: ${{ always() }}
         run: |
-          echo "Checking reports directory for container ${{ matrix.container }}..."
-          ls -l cypress/reports/mocha/Regression/${{ matrix.container }}/.jsons || echo "Directory or files not found."
+          echo "Checking reports directory for containers ${{ matrix.containers }}..."
+          ls -l cypress/reports/mocha/Regression/${{ matrix.containers }}/.jsons || echo "Directory or files not found."
 
       # Step 4: Create Zip Archive of Mocha Reports
       - name: Zip Mocha Report Files
@@ -50,7 +50,7 @@ jobs:
           if [ -d "cypress/reports/mocha/Regression/${{ matrix.containers }}/.jsons" ]; then
             zip -r zipped-reports/mocha-reports-${{ matrix.containers }}.zip cypress/reports/mocha/Regression/${{ matrix.containers }}/.jsons/*
           else
-            echo "No files to zip for container ${{ matrix.containers }}."
+            echo "No files to zip for containers ${{ matrix.containers }}."
           fi
 
       # Step 5: Upload Artifacts
@@ -58,9 +58,9 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: test-results-${{ matrix.container }}
+          name: test-results-${{ matrix.containers }}
           retention-days: 1
-          path: zipped-reports/mocha-reports-${{ matrix.container }}.zip
+          path: zipped-reports/mocha-reports-${{ matrix.containers }}.zip
 
   # Job to download and list artifacts
   download-artifacts:
