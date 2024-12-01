@@ -187,4 +187,4 @@ jobs:
         if: ${{ always() }}
         run: |
           echo "Running errorHandler.js with downloaded-artifacts as an argument..."
-          node errorHandler.js ./failure-analysis-automation/downloaded-artifacts
+          node ./failure-analysis-automation/errorHandler.js downloaded-artifacts
