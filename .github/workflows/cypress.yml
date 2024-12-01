@@ -70,7 +70,7 @@ jobs:
       - name: Store env as file & set Cypress project ID Output
         id: set-cypresscloud-project-id
         run: |
-          echo "project_id= qdjmfg" >> $GITHUB_OUTPUT
+          echo "project_id=${{ env.CYPRESS_PROJECT_ID }}" >> $GITHUB_OUTPUT
       # Step 2: Run Cypress tests
       - name: Cypress Run for Matrix Container
         uses: cypress-io/github-action@v6
@@ -185,7 +185,8 @@ jobs:
               echo "env_name=$environment_name" >> $GITHUB_ENV
             fi
           fi
-
+      - name: access env variables
+        run: |
           # Print to confirm if env_name was set
           echo "DEBUG: Environment variable env_name set to ${{ env.env_name }}"
 
