@@ -12,14 +12,15 @@ on:
 jobs:
   # Job to run Cypress tests and upload artifacts
   cypress-run:
-    env:
-      CYPRESS_PROJECT_ID: 'qdjmfg'
-      CYPRESS_RECORD_KEY: '349e203f-44fe-4e1c-91b4-1869bd99af81'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         containers: [1, 2]
+    env:
+      CYPRESS_PROJECT_ID: 'qdjmfg'
+      CYPRESS_RECORD_KEY: '349e203f-44fe-4e1c-91b4-1869bd99af81'
+      MATRIX_CONTAINER: ${{ matrix.containers }}
     steps:
       # Step 1: Checkout the code
       - name: Checkout code
