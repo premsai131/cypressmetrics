@@ -20,6 +20,7 @@ async function readJsonFilesFromDirectory(directoryPath: string): Promise<any[]>
                     const fileContent = await fs.promises.readFile(fullPath, 'utf8');
                     const jsonData = JSON.parse(fileContent);
                     parsedResponses.push(jsonData);
+                    console.log(`Content of file ${fullPath}:`, JSON.stringify(jsonData, null, 2));
                 } catch (parseError) {
                     console.error(`Error parsing JSON from file ${fullPath}:`, parseError);
                     throw parseError;
