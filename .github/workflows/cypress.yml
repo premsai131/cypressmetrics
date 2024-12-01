@@ -187,6 +187,7 @@ jobs:
         if: ${{ always() }}
         run: |
           cd ./failure-analysis-automation
+          
           npm install
           echo "Running errorHandler.ts with downloaded-artifacts as an argument..."
           npx ts-node cypress/errorHandler.ts downloaded-artifacts
