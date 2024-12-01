@@ -188,5 +188,5 @@ jobs:
         run: |
           cd ./failure-analysis-automation
           npm install
-          echo "Running errorHandler.js with downloaded-artifacts as an argument..."
-          node cypress/errorHandler.js downloaded-artifacts
+          echo "Running errorHandler.ts with downloaded-artifacts as an argument..."
+          npx ts-node cypress/errorHandler.ts downloaded-artifacts
