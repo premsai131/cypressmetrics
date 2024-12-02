@@ -107,6 +107,7 @@ jobs:
           path: zipped-reports/mocha-reports-${{ matrix.containers }}.zip
           
   determine-environment2:
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     needs: cypress-run
     outputs:
