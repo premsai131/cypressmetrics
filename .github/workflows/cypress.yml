@@ -194,7 +194,7 @@ jobs:
           # Print to confirm if env_name was set
           echo "DEBUG: Environment variable env_name set to ${{ env.env_name }}"
 
-          CYPRESS_PROJECT_ID="${{ needs.cypress-run.outputs.cypress_project_id }}"
+          CYPRESS_PROJECT_ID="${{ secrets.CYPRESS_PROJECT_ID }}"
           GITHUB_RUN_ID="${{ github.run_id }}"
 
           echo "Environment Name: ${{ env.env_name }}"
