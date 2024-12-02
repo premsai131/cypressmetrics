@@ -108,10 +108,11 @@ jobs:
           
   determine-environment2:
     runs-on: ubuntu-latest
+    needs: cypress-run
     outputs:
       env_name: ${{ steps.set-environment.outputs.env_name }}
     steps:
-      - name: Set default environment name
+      - name: Set default environment names
         id: set-environment
         run: |
           current_hour=$(date +"%H")
