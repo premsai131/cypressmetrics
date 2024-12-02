@@ -188,6 +188,7 @@ jobs:
           fi
       - name: access env variables
         run: |
+          echo "${AWS_CONFIG}" > ./aws-config.properties
           # Print to confirm if env_name was set
           echo "DEBUG: Environment variable env_name set to ${{ env.env_name }}"
 
