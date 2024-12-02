@@ -132,7 +132,7 @@ jobs:
     if: ${{ always() }}
     needs: cypress-run
     runs-on: ubuntu-latest
-    environment: ${{ needs.determine-environment2.outputs.env_name }}
+    environment: 'blitzv2'
     env:
         AWS_CONFIG: ${{ secrets.KARATE_AWS_CONFIG_PROPERTIES }}
     steps:
