@@ -276,10 +276,12 @@ async function main() {
         const cypressCloudRunNumber = process.argv[4];  // Cypress run number
         const cypressCloudProjectId = process.argv[5]; // cypress cloud project id
         const jsonFiles = await readJsonFilesFromDirectory(resultDirectoryPath);
-        const configPath = path.resolve(__dirname, "../../app_test/aws-config.properties");
-        const directoryPath = path.join(__dirname, `../../app_test/cypress/reports/mocha/${testType}`);
+        const configPath = path.resolve(__dirname, "../../aws-config.properties");
+        const directoryPath = path.join(__dirname, `../../cypress/reports/mocha/${testType}`);
+         const config = loadProperties(configPath);
+        console.log("config", config)
         const categorizedFailures = await processFailures(jsonFiles);
-        const config = loadProperties(configPath);
+       
         const { errorMap, noLogsBucket, clientErrorsBucket } = await processFailuresFromLogs(categorizedFailures, config);
         console.log(errorMap, noLogsBucket, clientErrorsBucket)
         await notifyErrors(errorMap, noLogsBucket, clientErrorsBucket, config, env, testType, cypressCloudRunNumber, cypressCloudProjectId)
