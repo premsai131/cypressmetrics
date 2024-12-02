@@ -113,7 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ needs.determine-environment.outputs.env_name }}
     env:
-        AWS_CONFIG: ${{ secrets.KARATE_AWS_CONFIG_PROPERTIES}}
+        AWS_CONFIG: ${{ secrets.KARATE_AWS_CONFIG_PROPERTIES }}
     steps:
       # Step 1: Check out repository to access the JavaScript script
       - name: Checkout Code
