@@ -110,6 +110,7 @@ jobs:
   download-artifacts:
     if: ${{ always() }}
     needs: cypress-run
+    environment: ${{ needs.determine-environment.outputs.env_name }}
     runs-on: ubuntu-latest
     steps:
       # Step 1: Check out repository to access the JavaScript script
