@@ -194,14 +194,14 @@ jobs:
             fi
           fi
       - name: access env variables
+        env:
+          ENV_NAME: ${{ needs.determine-environment.outputs.env_name }}
+          CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
           echo "${AWS_CONFIG}" > ./aws-config.properties
           # Print to confirm if env_name was set
-          echo "DEBUG: Environment variable env_name set to ${{ env.env_name }}"
-          ENV_NAME="${{ needs.determine-environment.outputs.env_name }}"
-          CYPRESS_PROJECT_ID="${{ secrets.CYPRESS_PROJECT_ID }}"
-          GITHUB_RUN_ID="${{ github.run_id }}"
-
+          
           echo "Environment Name: $ENV_NAME"
           echo "Cypress Project ID: $CYPRESS_PROJECT_ID"
           echo "GitHub Run ID: $GITHUB_RUN_ID"
