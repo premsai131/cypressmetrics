@@ -105,20 +105,39 @@ jobs:
           name: test-results-${{ matrix.containers }}
           retention-days: 1
           path: zipped-reports/mocha-reports-${{ matrix.containers }}.zip
+          
+  determine-environment2:
+    runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.set-environment.outputs.env_name }}
+    steps:
+      - name: Set default environment name
+        id: set-environment
+        run: |
+          current_hour=$(date +"%H")
+          echo "Hour Now: "$current_hour
+          if [[ "$current_hour" = "74" ]]; then
+            echo "env_name=blitzv2" >> $GITHUB_OUTPUT
+          elif [[ "$current_hour" = "55" ]]; then
+            echo "env_name=stagev2" >> $GITHUB_OUTPUT
+          else
+            echo "env_name=${{ github.event.inputs.environment_name }}" >> $GITHUB_OUTPUT
+          fi
+          echo "Github Output: "$GITHUB_OUTPUT
 
   # Job to download and list artifacts
   download-artifacts:
     if: ${{ always() }}
     needs: cypress-run
     runs-on: ubuntu-latest
-    environment: ${{ needs.determine-environment.outputs.env_name }}
+    environment: ${{ needs.determine-environment2.outputs.env_name }}
     env:
         AWS_CONFIG: ${{ secrets.KARATE_AWS_CONFIG_PROPERTIES }}
     steps:
       - name: Print Environment Name (from job level)
         run: |
           echo "===================="
-          echo "Job-Level Environment Name: ${{ needs.determine-environment.outputs.env_name }}"
+          echo "Job-Level Environment Name: ${{ needs.determine-environment2.outputs.env_name }}"
           echo "===================="
       # Step 1: Check out repository to access the JavaScript script
       - name: Checkout Code
