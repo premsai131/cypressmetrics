@@ -115,6 +115,11 @@ jobs:
     env:
         AWS_CONFIG: ${{ secrets.KARATE_AWS_CONFIG_PROPERTIES }}
     steps:
+      - name: Print Environment Name (from job level)
+        run: |
+          echo "===================="
+          echo "Job-Level Environment Name: ${{ needs.determine-environment.outputs.env_name }}"
+          echo "===================="
       # Step 1: Check out repository to access the JavaScript script
       - name: Checkout Code
         uses: actions/checkout@v4
