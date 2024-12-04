@@ -142,6 +142,7 @@ jobs:
             "Vaultid: ${{ matrix.containers.vault_id}}"
     
       - name: Cypress run for sanity tests
+        if: ${{ always() }}
         run: |
           echo |
             echo "containers: ${{ env.MATRIX_CONTAINER }}"
