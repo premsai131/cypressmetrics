@@ -116,23 +116,24 @@ jobs:
             echo "::set-output name=matrix_container::$containers_list"  # Set output here
           fi
   output-containers:
-    needs: [determine-environment, calculate-containers-count]
+    needs: [determine-environment, calculate-containers-count, prepare-containers]
     runs-on: ubuntu-latest
     steps:
       - name: containers
         run: |
           echo "Raw Output: ${{ needs.calculate-containers-count.outputs.default_containers }}"
           echo "Count: $(echo '${{ needs.calculate-containers-count.outputs.default_containers }}' | jq '. | length')"
+          
   cypress-run:
-  needs: [determine-environment, calculate-containers-count]
-  runs-on: ubuntu-22.04
-  strategy:
-    fail-fast: false
-    matrix:
-      containers: ${{ fromJSON(needs.calculate-containers-count.outputs.default_containers) }}
-  steps:
-    - name: Cypress run for Smoke tests
-      run: |
-        echo "MATRIX_CONTAINER: ${{ needs.prepare-containers.outputs.matrix-container }}"
+    needs: [determine-environment, calculate-containers-count, prepare-containers]
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: ${{ fromJSON(needs.calculate-containers-count.outputs.default_containers) }}
+    steps:
+      - name: Cypress run for Smoke tests
+        run: |
+          echo "MATRIX_CONTAINER: ${{ needs.prepare-containers.outputs.matrix-container }}"
     
       
