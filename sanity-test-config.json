@@ -40,9 +40,6 @@
      "workspace_url": "https://vault-beffe.amazon.com",
      "run_generate_bearer_token_tests":false
    },
-   
-     "run_generate_bearer_token_tests":false
-   },
    {
      "data_plane_url": "https://vault.amazon.com",
      "display_name": "Canada",
