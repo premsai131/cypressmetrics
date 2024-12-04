@@ -1,0 +1,60 @@
+{
+ "regions": [
+   {
+     "data_plane_url": "https://vault.amazon.com",
+     "display_name": "Oregon",
+     "run_create_function_tests": false,
+     "functions_deployed": false,
+     "vault_id": "h8f0a2b8afe045a2af4859e21ac47cdd",
+     "workspace_id": "f9d927a76f5046f7bff6ec4f99acb954",
+     "workspace_url": "https://vault-beffe.amazon.com",
+     "run_generate_bearer_token_tests":false
+   },
+   {
+     "data_plane_url": "https://vault.amazon.com",
+     "display_name": "Oregon",
+     "run_create_function_tests": false,
+     "functions_deployed": false,
+     "vault_id": "f3e6cd326272414ab7deaf7652972e55",
+     "workspace_id": "d358ce364e1e43799b14c93357e35ec5",
+     "workspace_url": "https://vault-beffe.amazon.com",
+     "run_generate_bearer_token_tests":false
+   },
+   {
+     "data_plane_url": "https://vault.amazon.com",
+     "display_name": "Virginia",
+     "run_create_function_tests": false,
+     "functions_deployed": true,
+     "vault_id": "uc84a634cd274e3ba6baf27c1571f008",
+     "workspace_id": "e9fbb57c772f4feaa02ea491fd82eadd",
+     "workspace_url": "https://vault-beffe.amazon.com",
+     "run_generate_bearer_token_tests":false
+   },
+   {
+     "data_plane_url": "https://vault.amazon.com",
+     "display_name": "Sydney",
+     "run_create_function_tests": false,
+     "functions_deployed": false,
+     "vault_id": "m5d27d049f2e48849ab0b463f57bdaf9",
+     "workspace_id": "fd5778c683484c2b8c2c71de1216ef59",
+     "workspace_url": "https://vault-beffe.amazon.com",
+     "run_generate_bearer_token_tests":false
+   },
+   
+     "run_generate_bearer_token_tests":false
+   },
+   {
+     "data_plane_url": "https://vault.amazon.com",
+     "display_name": "Canada",
+     "run_create_function_tests": false,
+     "functions_deployed": true,
+     "vault_id": "d062a011aa564caaa6413f4bc806151f",
+     "workspace_id": "qd0ef01e9bcf46689748d6207dd66c43",
+     "workspace_url": "https://vault-beffe.amazon.com",
+     "run_generate_bearer_token_tests":false
+   } 
+ ]
+}
+
+
+
