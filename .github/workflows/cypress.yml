@@ -134,6 +134,8 @@ jobs:
     steps:
       - name: Cypress run for Smoke tests
         run: |
-          echo "MATRIX_CONTAINER: ${{ needs.prepare-containers.outputs.matrix-container }}"
+          echo |
+            "MATRIX_CONTAINER: ${{ needs.prepare-containers.outputs.matrix-container }}"
+            "Vaultid: ${{ matrix.containers.vault_id}}"
     
       
