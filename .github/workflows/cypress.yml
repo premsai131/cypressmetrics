@@ -92,7 +92,29 @@ jobs:
           # Debugging: Output the file content
           echo "GITHUB_OUTPUT content:"
           cat $GITHUB_OUTPUT
-
+  prepare-containers:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix-container: ${{ steps.prepare_containers.outputs.matrix_container }}  # Store the value to outputs
+    steps:
+      - name: Prepare matrix containers based on environment
+        id: prepare_containers
+        run: |
+          echo "Environment is: ${{ secrets.ENVIRONMENT }}"
+          if [ "${{ secrets.ENVIRONMENT }}" == "production" ]; then
+            echo "is_production=true" >> $GITHUB_ENV
+            echo "Processing containers for production environment"
+            containers=$(echo '${{ needs.calculate-containers-count.outputs.default_containers }}' | jq -r 'map(.workspace_id) | join(",")')
+            echo "Containers: $containers"
+            echo "MATRIX_CONTAINER=$containers" >> $GITHUB_ENV
+            echo "::set-output name=matrix_container::$containers"  # Set output here
+          else
+            echo "is_production=false" >> $GITHUB_ENV
+            echo "Processing containers for non-production environment"
+            containers_list=${{ needs.calculate-containers-count.outputs.default_containers }}
+            echo "MATRIX_CONTAINER=$containers_list" >> $GITHUB_ENV
+            echo "::set-output name=matrix_container::$containers_list"  # Set output here
+          fi
   output-containers:
     needs: [determine-environment, calculate-containers-count]
     runs-on: ubuntu-latest
@@ -108,7 +130,9 @@ jobs:
     fail-fast: false
     matrix:
       containers: ${{ fromJSON(needs.calculate-containers-count.outputs.default_containers) }}
-  
   steps:
-    - name: print container
-      run: echo "Workspace ID: ${{ matrix.containers.workspace_id }}"
+    - name: Cypress run for Smoke tests
+      run: |
+        echo "MATRIX_CONTAINER: ${{ needs.prepare-containers.outputs.matrix-container }}"
+    
+      
