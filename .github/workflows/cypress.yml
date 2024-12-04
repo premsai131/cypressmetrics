@@ -101,3 +101,14 @@ jobs:
         run: |
           echo "Raw Output: ${{ needs.calculate-containers-count.outputs.default_containers }}"
           echo "Count: $(echo '${{ needs.calculate-containers-count.outputs.default_containers }}' | jq '. | length')"
+  cypress-run:
+  needs: [determine-environment, calculate-containers-count]
+  runs-on: ubuntu-22.04
+  strategy:
+    fail-fast: false
+    matrix:
+      containers: ${{ fromJSON(needs.calculate-containers-count.outputs.default_containers) }}
+  
+  steps:
+    - name: print container
+      run: echo "Workspace ID: ${{ matrix.containers.workspace_id }}"
