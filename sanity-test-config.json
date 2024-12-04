@@ -2,7 +2,7 @@
  "regions": [
    {
      "data_plane_url": "https://vault.amazon.com",
-     "display_name": "Oregon",
+     "display_name": "prod2.Virginia",
      "run_create_function_tests": false,
      "functions_deployed": false,
      "vault_id": "h8f0a2b8afe045a2af4859e21ac47cdd",
@@ -12,7 +12,7 @@
    },
    {
      "data_plane_url": "https://vault.amazon.com",
-     "display_name": "Oregon",
+     "display_name": "prod1.Oregon",
      "run_create_function_tests": false,
      "functions_deployed": false,
      "vault_id": "f3e6cd326272414ab7deaf7652972e55",
@@ -22,7 +22,7 @@
    },
    {
      "data_plane_url": "https://vault.amazon.com",
-     "display_name": "Virginia",
+     "display_name": "prod85.Oregon",
      "run_create_function_tests": false,
      "functions_deployed": true,
      "vault_id": "uc84a634cd274e3ba6baf27c1571f008",
@@ -32,7 +32,7 @@
    },
    {
      "data_plane_url": "https://vault.amazon.com",
-     "display_name": "Sydney",
+     "display_name": "pro5551.Oregon",
      "run_create_function_tests": false,
      "functions_deployed": false,
      "vault_id": "m5d27d049f2e48849ab0b463f57bdaf9",
@@ -42,7 +42,7 @@
    },
    {
      "data_plane_url": "https://vault.amazon.com",
-     "display_name": "Canada",
+     "display_name": "Canprod1.Oregonada",
      "run_create_function_tests": false,
      "functions_deployed": true,
      "vault_id": "d062a011aa564caaa6413f4bc806151f",
