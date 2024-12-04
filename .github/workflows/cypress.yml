@@ -98,4 +98,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: containers
-        run: echo "${{ needs.calculate-containers-count.outputs.default_containers }}" 
+        run: |
+          echo "Raw Output: ${{ needs.calculate-containers-count.outputs.default_containers }}"
+          echo "Count: $(echo '${{ needs.calculate-containers-count.outputs.default_containers }}' | jq '. | length')"
