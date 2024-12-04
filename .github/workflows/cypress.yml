@@ -131,6 +131,8 @@ jobs:
       fail-fast: false
       matrix:
         containers: ${{ fromJSON(needs.calculate-containers-count.outputs.default_containers) }}
+    env:
+       MATRIX_CONTAINER: ${{ github.event.inputs.environment_name == 'production' && matrix.containers.vault_id || matrix.containers }}
     steps:
       - name: Cypress run for Smoke tests
         run: |
@@ -138,8 +140,8 @@ jobs:
             echo "containers: ${{ env.MATRIX_CONTAINER }}"
             "continaers: ${{ needs.prepare-containers.outputs.matrix-container }}"
             "Vaultid: ${{ matrix.containers.vault_id}}"
-        env:
-          MATRIX_CONTAINER: ${{ github.event.inputs.environment_name == 'production' && matrix.containers.vault_id || matrix.containers }}
-           
     
-      
+      - name: Cypress run for sanity tests
+        run: |
+          echo |
+            echo "containers: ${{ env.MATRIX_CONTAINER }}"
