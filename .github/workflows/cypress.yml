@@ -132,7 +132,7 @@ jobs:
       matrix:
         containers: ${{ fromJSON(needs.calculate-containers-count.outputs.default_containers) }}
     env:
-       MATRIX_CONTAINER: ${{ github.event.inputs.environment_name == 'production' && matrix.containers.vault_id || matrix.containers }}
+       MATRIX_CONTAINER: ${{ github.event.inputs.environment_name == 'production' && matrix.containers.display_name || matrix.containers }}
     steps:
       - name: Cypress run for Smoke tests
         run: |
