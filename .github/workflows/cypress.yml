@@ -135,7 +135,13 @@ jobs:
       - name: Cypress run for Smoke tests
         run: |
           echo |
-            "MATRIX_CONTAINER: ${{ needs.prepare-containers.outputs.matrix-container }}"
+            echo "containers: ${{ matrix.containers }}"
+            "continaers: ${{ needs.prepare-containers.outputs.matrix-container }}"
             "Vaultid: ${{ matrix.containers.vault_id}}"
+        env:
+          MATRIX_CONTAINER: ${{
+            github.event.inputs.environment_name == 'production' 
+            && matrix.containers.vault_id || ${{ matrix.containers }}
+           
     
       
