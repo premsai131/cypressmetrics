@@ -26,6 +26,13 @@ on:
           - Smoke
           - Regression
           - Sanity
+      cloud_record:
+        description: 'Cypress cloud record'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+        default: 'true'
 
 jobs:
   calculate-containers-count:
@@ -63,8 +70,6 @@ jobs:
     outputs:
       env_name: ${{ steps.set-default.outputs.env_name }}
     steps:
-      - name: Debug default containers
-        run: echo "${{ needs.calculate-containers-count.outputs.default_containers }}"
       - name: Set default environment name
         id: set-default
         run: |
@@ -90,6 +95,7 @@ jobs:
 
   # Job to run Cypress tests and upload artifacts
   cypress-run:
+    needs: [determine-environment, calculate-containers-count]
     outputs:
       cypress_project_id: ${{ steps.set-cypresscloud-project-id.outputs.project_id }}
     runs-on: ubuntu-latest
@@ -100,12 +106,13 @@ jobs:
     env:
       CYPRESS_PROJECT_ID: 'qdjmfg'
       CYPRESS_RECORD_KEY: '349e203f-44fe-4e1c-91b4-1869bd99af81'
-      MATRIX_CONTAINER: ${{ matrix.containers }}
     steps:
+      - name: Debug default containers
+        run: echo "${{ needs.calculate-containers-count.outputs.default_containers }}"
+
       # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
-        
       - name: Store env as file & set Cypress project ID Output
         id: set-cypresscloud-project-id
         run: |
