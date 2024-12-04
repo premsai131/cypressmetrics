@@ -19,13 +19,52 @@ on:
           - production
         default: blitzv2
         required: true
+      test_type:
+        description: 'Select Test Type'
+        type: choice
+        options:
+          - Smoke
+          - Regression
+          - Sanity
 
 jobs:
+  calculate-containers-count:
+    runs-on: ubuntu-latest
+    outputs:
+      default_containers: ${{ steps.set-default.outputs.default_containers }}
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v3
+    
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+    
+      - name: Set default containers
+        id: set-default
+        run: |
+          cloud_record=${{ github.event.inputs.cloud_record || 'true' }}
+          environment_name="${{ github.event.inputs.environment_name }}"
+          if [[ "$cloud_record" == "true" && "$environment_name" == "production" ]]; then
+           regions=$(cat sanity-test-config.json)
+           echo "Regions: $regions"
+           default_containers=$(echo "$regions" | jq -c '[.regions[] | {workspace_id: .workspace_id, vault_id: .vault_id, display_name: .display_name, data_plane_url: .data_plane_url, workspace_url: .workspace_url, run_create_function_tests: .run_create_function_tests, run_generate_bearer_token_tests: .run_generate_bearer_token_tests}]')
+           echo "default_containers=$default_containers" >> $GITHUB_OUTPUT
+            
+          elif [[ "$cloud_record" == "true" || "${{ github.event_name }}" == "schedule" ]]; then
+            echo "default_containers=[1, 2, 3, 4, 5]" >> $GITHUB_OUTPUT
+    
+          else
+            echo "default_containers=[1]" >> $GITHUB_OUTPUT
+          fi
   determine-environment:
     runs-on: ubuntu-latest
     outputs:
       env_name: ${{ steps.set-default.outputs.env_name }}
     steps:
+      - name: Debug default containers
+        run: echo "${{ needs.calculate-containers-count.outputs.default_containers }}"
       - name: Set default environment name
         id: set-default
         run: |
