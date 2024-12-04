@@ -93,6 +93,13 @@ jobs:
           echo "GITHUB_OUTPUT content:"
           cat $GITHUB_OUTPUT
 
+  output-containers:
+    needs: [determine-environment, calculate-containers-count]
+    runs-on: ubuntu-latest
+    steps:
+      - name: containers
+      - run: echo "${{ needs.calculate-containers-count.outputs.default_containers }}"
+      
   # Job to run Cypress tests and upload artifacts
   cypress-run:
     needs: [determine-environment, calculate-containers-count]
