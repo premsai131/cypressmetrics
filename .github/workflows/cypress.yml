@@ -1,12 +1,8 @@
 name: Run Cypress Tests and List Artifacts
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  schedule:
+    - cron: '25 14,23 * * 0,1,2,3,4'
   workflow_dispatch: # Enables manual triggering of the workflow
     inputs:
       environment_name:
@@ -74,20 +70,19 @@ jobs:
         id: set-default
         run: |
           current_hour=$(date +"%H")
-          echo "Current Hour: $current_hour"
-          
-          if [[ "$current_hour" == "21" ]]; then
-            echo "env_name=blitzv2" >> $GITHUB_OUTPUT
-          elif [[ "$current_hour" == "23" ]]; then
-            echo "env_name=stagev2" >> $GITHUB_OUTPUT
-          else
-            environment_name=${{ github.event.inputs.environment_name }}
-            if [[ -z "$environment_name" ]]; then
-              echo "env_name=default-env" >> $GITHUB_OUTPUT
+          echo "Hour Now: $current_hour"
+          if [[ -z "${{ github.event.inputs.environment_name }}" ]]; then
+            if [[ "$current_hour" == "21" ]]; then
+              echo "env_name=blitzv2" >> $GITHUB_OUTPUT
+            elif [[ "$current_hour" == "14" ]]; then
+              echo "env_name=stagev2" >> $GITHUB_OUTPUT
             else
-              echo "env_name=$environment_name" >> $GITHUB_OUTPUT
+              echo "env_name=default_env" >> $GITHUB_OUTPUT
             fi
+          else
+            echo "env_name=${{ github.event.inputs.environment_name }}" >> $GITHUB_OUTPUT
           fi
+          echo "Github Output: $GITHUB_OUTPUT"
           
           # Debugging: Output the file content
           echo "GITHUB_OUTPUT content:"
