@@ -2,8 +2,8 @@ name: Run Cypress Tests and List Artifacts
 
 on:
   schedule:
-    - cron: '25 14,23 * * 0,1,2,3,4'
-  workflow_dispatch: # Enables manual triggering of the workflow
+    - cron: '35 14,23 * * 0,1,2,3,4'
+  workflow_dispatch:
     inputs:
       environment_name:
         description: 'Select Environment'
@@ -14,7 +14,6 @@ on:
           - sandboxv2
           - production
         default: blitzv2
-        required: true
       test_type:
         description: 'Select Test Type'
         type: choice
@@ -38,29 +37,19 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v3
-    
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-    
+
       - name: Set default containers
         id: set-default
         run: |
           cloud_record=${{ github.event.inputs.cloud_record || 'true' }}
           environment_name="${{ github.event.inputs.environment_name }}"
           if [[ "$cloud_record" == "true" && "$environment_name" == "production" ]]; then
-           regions=$(cat sanity-test-config.json)
-           echo "Regions: $regions"
-           default_containers=$(echo "$regions" | jq -c '[.regions[] | {workspace_id: .workspace_id, vault_id: .vault_id, display_name: .display_name, data_plane_url: .data_plane_url, workspace_url: .workspace_url, run_create_function_tests: .run_create_function_tests, run_generate_bearer_token_tests: .run_generate_bearer_token_tests}]')
-           echo "default_containers=$default_containers" >> $GITHUB_OUTPUT
-            
-          elif [[ "$cloud_record" == "true" || "${{ github.event_name }}" == "schedule" ]]; then
-            echo "default_containers=[1, 2, 3, 4, 5]" >> $GITHUB_OUTPUT
-    
+            regions=$(cat sanity-test-config.json)
+            default_containers=$(echo "$regions" | jq -c '[.regions[]]')
+            echo "default_containers=$default_containers" >> $GITHUB_OUTPUT
           else
-            echo "default_containers=[1]" >> $GITHUB_OUTPUT
-          fi
+            echo "default_containers=[1,2,3,4,5]" >> $GITHUB_OUTPUT
+
   determine-environment:
     runs-on: ubuntu-latest
     outputs:
@@ -70,7 +59,6 @@ jobs:
         id: set-default
         run: |
           current_hour=$(date +"%H")
-          echo "Hour Now: $current_hour"
           if [[ -z "${{ github.event.inputs.environment_name }}" ]]; then
             if [[ "$current_hour" == "21" ]]; then
               echo "env_name=blitzv2" >> $GITHUB_OUTPUT
@@ -81,63 +69,15 @@ jobs:
             fi
           else
             echo "env_name=${{ github.event.inputs.environment_name }}" >> $GITHUB_OUTPUT
-          fi
-          echo "Github Output: $GITHUB_OUTPUT"
-          
-          # Debugging: Output the file content
-          echo "GITHUB_OUTPUT content:"
-          cat $GITHUB_OUTPUT
-  prepare-containers:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix-container: ${{ steps.prepare_containers.outputs.matrix_container }}  # Store the value to outputs
-    steps:
-      - name: Prepare matrix containers based on environment
-        id: prepare_containers
-        run: |
-          echo "Environment is: ${{ secrets.ENVIRONMENT }}"
-          if [ "${{ secrets.ENVIRONMENT }}" == "production" ]; then
-            echo "is_production=true" >> $GITHUB_ENV
-            echo "Processing containers for production environment"
-            containers=$(echo '${{ needs.calculate-containers-count.outputs.default_containers }}' | jq -r 'map(.workspace_id) | join(",")')
-            echo "Containers: $containers"
-            echo "MATRIX_CONTAINER=$containers" >> $GITHUB_ENV
-            echo "::set-output name=matrix_container::$containers"  # Set output here
-          else
-            echo "is_production=false" >> $GITHUB_ENV
-            echo "Processing containers for non-production environment"
-            containers_list=${{ needs.calculate-containers-count.outputs.default_containers }}
-            echo "MATRIX_CONTAINER=$containers_list" >> $GITHUB_ENV
-            echo "::set-output name=matrix_container::$containers_list"  # Set output here
-          fi
-  output-containers:
-    needs: [determine-environment, calculate-containers-count, prepare-containers]
-    runs-on: ubuntu-latest
-    steps:
-      - name: containers
-        run: |
-          echo "Raw Output: ${{ needs.calculate-containers-count.outputs.default_containers }}"
-          echo "Count: $(echo '${{ needs.calculate-containers-count.outputs.default_containers }}' | jq '. | length')"
-          
+
   cypress-run:
-    needs: [determine-environment, calculate-containers-count, prepare-containers]
-    runs-on: ubuntu-22.04
+    needs: [determine-environment, calculate-containers-count]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         containers: ${{ fromJSON(needs.calculate-containers-count.outputs.default_containers) }}
-    env:
-       MATRIX_CONTAINER: ${{ github.event.inputs.environment_name == 'production' && matrix.containers.display_name || matrix.containers }}
     steps:
-      - name: Cypress run for Smoke tests
+      - name: Run Cypress tests
         run: |
-          echo |
-            echo "containers: ${{ env.MATRIX_CONTAINER }}"
-            "continaers: ${{ needs.prepare-containers.outputs.matrix-container }}"
-            "Vaultid: ${{ matrix.containers.vault_id}}"
-    
-      - name: Cypress run for sanity tests
-        if: ${{ always() }}
-        run: |
-          echo |
-            echo "containers: ${{ env.MATRIX_CONTAINER }}"
+          echo "Running tests for container: ${{ matrix.containers }}"
