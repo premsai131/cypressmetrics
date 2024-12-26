@@ -59,7 +59,7 @@ jobs:
         id: set-default
         run: |
           current_hour=$(date +"%H")
-          if [[ -z "${{ github.event.inputs.environment_name }}" ]]; then
+          if [[ -z ${{ github.event.inputs.environment_name }} ]]; then
             if [[ "$current_hour" == "21" ]]; then
               echo "env_name=blitzv2" >> $GITHUB_OUTPUT
             elif [[ "$current_hour" == "14" ]]; then
