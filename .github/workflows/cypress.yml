@@ -2,7 +2,7 @@ name: Run Cypress Tests and List Artifacts
 
 on:
   schedule:
-    - cron: '* * * * *'
+    - cron: '*/2 * * * *'
   workflow_dispatch:
     inputs:
       environment_name:
