@@ -2,7 +2,7 @@ name: Run Cypress Tests and List Artifacts
 
 on:
   schedule:
-    - cron: '*/2 * * * *'
+    - cron: '*/2 * * * *' # Runs every 2 minutes
   workflow_dispatch:
     inputs:
       environment_name:
@@ -46,9 +46,10 @@ jobs:
           if [[ "$cloud_record" == "true" && "$environment_name" == "production" ]]; then
             regions=$(cat sanity-test-config.json)
             default_containers=$(echo "$regions" | jq -c '[.regions[]]')
-            echo "default_containers=$default_containers" >> $GITHUB_OUTPUT
+            echo "default_containers=$default_containers" >> $GITHUB_ENV  # Using GITHUB_ENV for passing to subsequent jobs
           else
-            echo "default_containers=[1,2,3,4,5]" >> $GITHUB_OUTPUT
+            echo "default_containers=[1,2,3,4,5]" >> $GITHUB_ENV  # Hardcoded values if not production
+          fi
 
   determine-environment:
     runs-on: ubuntu-latest
@@ -59,7 +60,7 @@ jobs:
         id: set-default
         run: |
           current_hour=$(date +"%H")
-          if [[ -z ${{ github.event.inputs.environment_name }} ]]; then
+          if [[ -z "${{ github.event.inputs.environment_name }}" ]]; then
             if [[ "$current_hour" == "21" ]]; then
               echo "env_name=blitzv2" >> $GITHUB_OUTPUT
             elif [[ "$current_hour" == "14" ]]; then
@@ -76,8 +77,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        containers: ${{ fromJSON(needs.calculate-containers-count.outputs.default_containers) }}
+        container: ${{ fromJSON(needs.calculate-containers-count.outputs.default_containers) }}
     steps:
       - name: Run Cypress tests
         run: |
-          echo "Running tests for container: ${{ matrix.containers }}"
+          echo "Running tests for container: ${{ matrix.container }}"
