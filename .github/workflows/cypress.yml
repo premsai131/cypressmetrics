@@ -5,15 +5,6 @@ on:
     - cron: '* * * * *' # Runs every 2 minutes
   workflow_dispatch:
     inputs:
-      environment_name:
-        description: 'Select Environment'
-        type: choice
-        options:
-          - blitzv2
-          - stagev2
-          - sandboxv2
-          - production
-        default: blitzv2
       test_type:
         description: 'Select Test Type'
         type: choice
