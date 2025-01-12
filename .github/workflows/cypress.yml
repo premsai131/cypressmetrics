@@ -72,5 +72,8 @@ jobs:
         container: ${{ fromJSON(needs.calculate-containers-count.outputs.default_containers) }}
     steps:
       - name: Run Cypress tests
+        env:
+          IS_SCHEDULED_EVENT: ${{ github.event_name == 'schedule'}}
         run: |
           echo "Running tests for container: ${{ matrix.container }}"
+          echo "Value of IS_SCHEDULED_EVENT: $IS_SCHEDULED_EVENT"
