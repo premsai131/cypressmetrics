@@ -31,7 +31,7 @@ jobs:
         run: |
           echo "Running tests for container: ${{ matrix.container }}"
           echo "Value of IS_SCHEDULED_EVENT: $IS_SCHEDULED_EVENT"
-          exit 1 # Simulating a failure for demonstration purposes
+          exit 0 # Simulating a failure for demonstration purposes
 
   error-handler:
     needs: [cypress-run]
