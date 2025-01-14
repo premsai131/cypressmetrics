@@ -1,8 +1,5 @@
-name: Run Cypress Tests and List Artifacts
-
+name: Run Cypress Tests and Handle Failures
 on:
-  schedule:
-    - cron: '* * * * *' # Runs every 2 minutes
   workflow_dispatch:
     inputs:
       test_type:
@@ -26,7 +23,7 @@ jobs:
     outputs:
       default_containers: ${{ steps.set-default.outputs.default_containers }}
     steps:
-      - name: checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set default containers
@@ -37,10 +34,9 @@ jobs:
           if [[ "$cloud_record" == "true" && "$environment_name" == "production" ]]; then
             regions=$(cat sanity-test-config.json)
             default_containers=$(echo "$regions" | jq -c '[.regions[]]')
-            echo "default_containers=$default_containers" >> $GITHUB_ENV  # Using GITHUB_ENV for passing to subsequent jobs
+            echo "default_containers=$default_containers" >> $GITHUB_ENV
           else
-            echo "default_containers=[1,2,3,4,5]" >> $GITHUB_ENV  # Hardcoded values if not production
-          fi
+            echo "default_containers=[1,2,3,4,5]" >> $GITHUB_ENV
 
   determine-environment:
     runs-on: ubuntu-latest
@@ -73,7 +69,38 @@ jobs:
     steps:
       - name: Run Cypress tests
         env:
-          IS_SCHEDULED_EVENT: ${{ github.event_name == 'schedule'}}
+          IS_SCHEDULED_EVENT: ${{ github.event_name == 'schedule' }}
         run: |
           echo "Running tests for container: ${{ matrix.container }}"
           echo "Value of IS_SCHEDULED_EVENT: $IS_SCHEDULED_EVENT"
+          exit 1 # Simulating a failure for demonstration purposes
+
+  error-handler:
+    needs: [determine-environment, cypress-run]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Mocha Report Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: downloaded-artifacts
+
+      - name: Unzip Artifacts
+        run: |
+          for dir in downloaded-artifacts/*; do
+            if [ -d "$dir" ]; then
+              echo "Unzipping $dir..."
+              unzip -o "$dir/*.zip" -d "$dir/unzipped"
+            fi
+          done
+
+      - name: Capture env variables & Run Error Handler script
+        run: |
+          # Conditionally execute sleep if previous jobs failed
+          if [[ "${{ needs.cypress-run.result }}" == "failure" ]]; then
+            echo "Previous job failed. Executing failure handler..."
+            sleep 240
+          fi
