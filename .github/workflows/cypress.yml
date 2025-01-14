@@ -18,54 +18,12 @@ on:
         default: 'true'
 
 jobs:
-  calculate-containers-count:
-    runs-on: ubuntu-latest
-    outputs:
-      default_containers: ${{ steps.set-default.outputs.default_containers }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set default containers
-        id: set-default
-        run: |
-          cloud_record=${{ github.event.inputs.cloud_record || 'true' }}
-          environment_name="${{ github.event.inputs.environment_name }}"
-          if [[ "$cloud_record" == "true" && "$environment_name" == "production" ]]; then
-            regions=$(cat sanity-test-config.json)
-            default_containers=$(echo "$regions" | jq -c '[.regions[]]')
-            echo "default_containers=$default_containers" >> $GITHUB_ENV
-          else
-            echo "default_containers=[1,2,3,4,5]" >> $GITHUB_ENV
-
-  determine-environment:
-    runs-on: ubuntu-latest
-    outputs:
-      env_name: ${{ steps.set-default.outputs.env_name }}
-    steps:
-      - name: Set default environment name
-        id: set-default
-        run: |
-          current_hour=$(date +"%H")
-          if [[ -z "${{ inputs.environment_name }}" ]]; then
-            echo "Hour Now: $current_hour"
-            if [[ "$current_hour" == "14" ]]; then
-              echo "env_name=blitzv2" >> $GITHUB_OUTPUT
-            elif [[ "$current_hour" == "15" ]]; then
-              echo "env_name=stagev2" >> $GITHUB_OUTPUT
-            else
-              echo "env_name=default_env" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "env_name=${{ inputs.environment_name }}" >> $GITHUB_OUTPUT
-
   cypress-run:
-    needs: [determine-environment, calculate-containers-count]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        container: ${{ fromJSON(needs.calculate-containers-count.outputs.default_containers) }}
+        container: [ 1 ]
     steps:
       - name: Run Cypress tests
         env:
@@ -76,27 +34,13 @@ jobs:
           exit 1 # Simulating a failure for demonstration purposes
 
   error-handler:
-    needs: [determine-environment, cypress-run]
+    needs: [cypress-run]
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Download Mocha Report Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: downloaded-artifacts
-
-      - name: Unzip Artifacts
-        run: |
-          for dir in downloaded-artifacts/*; do
-            if [ -d "$dir" ]; then
-              echo "Unzipping $dir..."
-              unzip -o "$dir/*.zip" -d "$dir/unzipped"
-            fi
-          done
-
+        
       - name: Capture env variables & Run Error Handler script
         run: |
           # Conditionally execute sleep if previous jobs failed
