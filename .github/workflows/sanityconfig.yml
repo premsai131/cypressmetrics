@@ -1,0 +1,121 @@
+# region details for sanity tests.
+regions:
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: false
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 123213121
+    pipeline_deployed: false
+    fintech_deployed: false
+    region_name: goodrx.Oregon
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: false
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 123213122
+    pipeline_deployed: false
+    fintech_deployed: false
+    region_name: bambumeta.Virginia
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: false
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 123213123
+    pipeline_deployed: false
+    fintech_deployed: false
+    region_name: simplybail.Virginia
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: true
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 123213124
+    pipeline_deployed: false
+    fintech_deployed: false
+    region_name: rdc.Oregon
+  - data_plane_url: https://vault.amazonapis.com
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 123213125
+    functions_deployed: false
+    pipeline_deployed: false
+    fintech_deployed: false
+    region_name: newstore.Oregon
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: true
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 1232131216
+    pipeline_deployed: true
+    fintech_deployed: true
+    region_name: prod2.Virginia
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: false
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 123213127
+    pipeline_deployed: false
+    fintech_deployed: true
+    region_name: prod11.Sydney
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: false
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 123213128
+    pipeline_deployed: true
+    fintech_deployed: true
+    region_name: prod1.Oregon
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: true
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 1232131219
+    pipeline_deployed: true
+    fintech_deployed: true
+    region_name: prod4.Frankfurt
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: false
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 1232131210
+    pipeline_deployed: false
+    fintech_deployed: true
+    region_name: prod13.Jakarta
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: false
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 1232131211
+    pipeline_deployed: true
+    fintech_deployed: false
+    region_name: prod9.Tokyo
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: true
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 1232131212
+    pipeline_deployed: false
+    fintech_deployed: true
+    region_name: prod12.CapeTown
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: false
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 1232131213
+    pipeline_deployed: false
+    fintech_deployed: true
+    region_name: prod10.UAE
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: false
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 1232131214
+    pipeline_deployed: false
+    fintech_deployed: true
+    region_name: prod5.Mumbai
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: true
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 1232131215
+    pipeline_deployed: true
+    fintech_deployed: true
+    region_name: prod8.Canada
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: false
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 1232131216
+    pipeline_deployed: true
+    fintech_deployed: true
+    region_name: prod7.Singapore
+  - data_plane_url: https://vault.amazonapis.com
+    functions_deployed: false
+    vault_id: n540f41a074945319d284600a06
+    workspace_id: 1232131217
+    pipeline_deployed: false
+    fintech_deployed: true
+    region_name: prod7.Singapore
