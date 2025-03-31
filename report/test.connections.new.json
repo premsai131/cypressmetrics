@@ -1,0 +1,181 @@
+{
+  "SuiteSucceeded": true,
+  "StartTime": "2025-03-30T21:41:23.394887664Z",
+  "RunTime": 98560834098,
+  "TestsFailed": null,
+  "TestsPassed": [
+    { "TestName": "", "RequestID": "", "ErrorMsg": "" },
+    {
+      "TestName": "Should be able to assign VAULT_VIEWER role to SA",
+      "RequestID": "PDT_mk2H4R",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should be allowed to get vault",
+      "RequestID": "PDT_NRWkJS",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should not be able to delete the vault",
+      "RequestID": "PDT_PKx76T",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should be able to get record: DEFAULT data should get DEFAULT back",
+      "RequestID": "PDT_uKkmHi",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should Not be able to insert record",
+      "RequestID": "PDT_doqnic",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should be able to Assign Custom role: Vault Analyst to SA",
+      "RequestID": "PDT_lKhhHo",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should be allowed to get vault",
+      "RequestID": "PDT_MpY4qI",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should not be able to get patient ssn",
+      "RequestID": "PDT_m1XsoT",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should be able to get patient email and contact with REDACTION Policy as REDACTED",
+      "RequestID": "PDT_PDK5Dz",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should Not be able to insert record",
+      "RequestID": "PDT_CwUZBI",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should not be able to delete the vault",
+      "RequestID": "PDT_4R7Npj",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should be able to assign AUDITOR role to SA",
+      "RequestID": "PDT_PSdvXl",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "View Audit logs",
+      "RequestID": "PDT_yHO0Lx",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should be able to create service account",
+      "RequestID": "PDT_zFMjM6",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should be able to Assign Vault Owner role to SA",
+      "RequestID": "PDT_gD3Dvw",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Create Signed Data Token key for service account",
+      "RequestID": "PDT_mShklE",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Insert Record in vault using tokenize",
+      "RequestID": "PDT_bY4fbm",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should deny since request is not having signed data token",
+      "RequestID": "PDT_Mji8Cc",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should deny since ctxID is matching but token is expired",
+      "RequestID": "PDT_Oidlhg",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should deny since ctxID is not matching and token has not expired",
+      "RequestID": "PDT_kYJVMA",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should allow since ctxID matching and token has not expired",
+      "RequestID": "PDT_cWaJwP",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should be allowed to update SA with client config",
+      "RequestID": "PDT_B31wld",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should deny since request is having signed data token",
+      "RequestID": "PDT_bO8122",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should allow since request is not having signed data token",
+      "RequestID": "PDT_evNVj5",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should be allowed to update SA with client config",
+      "RequestID": "PDT_nub2px",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should deny since request is not having signed data token",
+      "RequestID": "PDT_SRnRYJ",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should allow since request is having signed data token",
+      "RequestID": "PDT_FWKjrw",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should be allowed to update SA with client config",
+      "RequestID": "PDT_Kt3IXi",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should deny since request is having signed data token",
+      "RequestID": "PDT_ojpKpw",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should allow since request is not having signed data token",
+      "RequestID": "PDT_rS7x2w",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "Should be able to assign CUSTOM_ROW_FILTER role to CAA Service Account",
+      "RequestID": "PDT_2v6ylb",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should get result on correct row filter using context value",
+      "RequestID": "PDT_oUggq5",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "should not get result on in-correct row filter using context value",
+      "RequestID": "PDT_FxOnm0",
+      "ErrorMsg": ""
+    },
+    {
+      "TestName": "list all CAA service account associated with vaults and delete all CAA service accounts",
+      "RequestID": "PDT_WGh4TP",
+      "ErrorMsg": ""
+    }
+  ],
+  "TestsSkipped": null,
+  "TestsPending": null
+}
