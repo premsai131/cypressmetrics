@@ -176,11 +176,17 @@ jobs:
         with:
           path: test_results  # All artifacts will be downloaded to this folder
   
-      - name: Debug - Check Directory Content
+      - name: Debug Working Directory
         run: |
-          echo "Listing contents of the current working directory..."
-          ls -alh ${{ github.workspace }}  # List files in the GitHub workspace to see structure
-  
+          echo "Current working directory:"
+          pwd
+          echo "Listing all files in the current directory:"
+          ls -alh
+          echo "Listing all files inside test_results if it exists:"
+          ls -alh test_results || echo "test_results directory not found"
+          echo "Finding all test-results-*.json files:"
+          find . -type f -name "test-results-*.json" || echo "No test result files found"
+      
       - name: Process Test Results
         id: process
         run: |
@@ -188,6 +194,7 @@ jobs:
           chmod +x ./scripts/process_sanity_test_results.sh
           echo "Running the process script..."
           ./scripts/process_sanity_test_results.sh
+
   
       - name: Set Job Outputs
         run: |
