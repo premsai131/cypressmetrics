@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 const REPORT_DIR = path.resolve("report"); // Absolute path based on the execution directory // Path to test reports
-const OUTPUT_JSON_FILE = path.join(__dirname, "test_results.json"); // Default output file
+const OUTPUT_JSON_FILE = path.resolve("test_results.json"); // Default output file
 
 // Get the container name from an environment variable
 const MATRIX_CONTAINER = process.env.MATRIX_CONTAINER || ""; 
