@@ -34,16 +34,18 @@ jobs:
           fetch-depth: 0
           path: ${{ github.workspace }}/src/github.com/${{ github.repository }}
           ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
-      - name: Check the files in the workspace
-        run: ls -la ${{ github.workspace }}
+
       # Filter yaml if fintech service or else use the default sanityconfig.yml
       - name: Filter yaml for fintech service or use default config
         run: |
+          CONFIG_PATH="${{ github.workspace }}/src/github.com/${{ github.repository }}/.github/workflows/sanityconfig.yml"
+          MODIFIED_CONFIG_PATH="${{ github.workspace }}/src/github.com/${{ github.repository }}/.github/workflows/modified_sanityconfig.yml"
           if [[ "${{ github.repository }}" == *"fintech-service"* ]]; then
-            yq '.regions |= map(select(.fintech_deployed == true))' "${{ github.workspace }}/.github/workflows/sanityconfig.yml" > "${{ github.workspace }}/.github/workflows/modified_sanityconfig.yml"
+            yq '.regions |= map(select(.fintech_deployed == true))' "$CONFIG_PATH" > "$MODIFIED_CONFIG_PATH"
           else
-            cp "${{ github.workspace }}/.github/workflows/sanityconfig.yml" "${{ github.workspace }}/.github/workflows/modified_sanityconfig.yml"
+            cp "$CONFIG_PATH" "$MODIFIED_CONFIG_PATH"
           fi
+
 
       # Read Region details from the YAML file
       - name: Read Region details
