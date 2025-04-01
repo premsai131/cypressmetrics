@@ -35,12 +35,15 @@ jobs:
           path: ${{ github.workspace }}/src/github.com/${{ github.repository }}
           ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
 
-      # Extra step to filter out the region details for fintech service
-      - name: Filter yaml if fintech service
-        if: ${{ contains( github.repository , 'fintech-service') }}
+      # Filter yaml if fintech service or else use the default sanityconfig.yml
+      - name: Filter yaml for fintech service or use default config
         run: |
-          yq '.regions |= map(select(.fintech_deployed == true))' "${{ github.workspace }}/sanityconfig.yml" > "${{ github.workspace }}/modified_sanityconfig.yml"
-      
+          if [[ "${{ github.repository }}" == *"fintech-service"* ]]; then
+            yq '.regions |= map(select(.fintech_deployed == true))' "${{ github.workspace }}/sanityconfig.yml" > "${{ github.workspace }}/modified_sanityconfig.yml"
+          else
+            cp "${{ github.workspace }}/sanityconfig.yml" "${{ github.workspace }}/modified_sanityconfig.yml"
+          fi
+
       # Read Region details from the YAML file
       - name: Read Region details
         id: read-regions
@@ -48,6 +51,9 @@ jobs:
             regions=$(yq '.regions' "${{ github.workspace }}/modified_sanityconfig.yml" -o json | jq -r tostring)
             echo "regions=$regions" >> $GITHUB_OUTPUT
 
+      # Debug Regions Output
+      - name: Debug Regions Output
+        run: echo "Regions: ${{ fromJson(steps.read-regions.outputs.regions) }}"
 
   run-tests:
     runs-on: ubuntu-latest
