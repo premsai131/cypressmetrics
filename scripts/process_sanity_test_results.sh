@@ -8,26 +8,40 @@ ls -alh
 echo "Checking if test_results exists:"
 ls -alh test_results || echo "test_results directory not found"
 
-echo "Finding all test-results-*.json files in test_results and its subdirectories:"
-find test_results -type f -name "test-results-*.json" -print || echo "No test result files found"
+# List all directories and files inside test_results
+echo "Listing all directories and files inside 'test_results':"
+for dir in test_results/*; do
+  if [[ -d "$dir" ]]; then
+    echo "Directory: $dir"
+    ls -alh "$dir"  # List files inside the directory
+  fi
+done
+
 echo "===================================================="
 
+# Initialize counters for total tests, passed, and failed
 total_tests=0
 total_passed=0
 total_failed=0
 
 # Find all JSON files inside test_results (including subdirectories)
+echo "Searching for test-results-*.json files..."
 for file in $(find test_results -type f -name "test-results-*.json"); do
   if [[ -f "$file" ]]; then
     echo "Processing file: $file"  # Debugging
 
+    # Make sure jq is parsing the JSON correctly
     tests=$(jq '.total_tests' "$file")
     passed=$(jq '.passed' "$file")
     failed=$(jq '.failed' "$file")
 
-    total_tests=$((total_tests + tests))
-    total_passed=$((total_passed + passed))
-    total_failed=$((total_failed + failed))
+    if [[ $? -eq 0 ]]; then
+      total_tests=$((total_tests + tests))
+      total_passed=$((total_passed + passed))
+      total_failed=$((total_failed + failed))
+    else
+      echo "Error parsing JSON file: $file"
+    fi
   fi
 done
 
