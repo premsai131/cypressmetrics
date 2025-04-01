@@ -50,7 +50,7 @@ jobs:
 
       # Debug Regions Output
       - name: Debug Regions Output
-        run: echo "Regions: ${{ steps.read-regions.outputs.regions }}"
+        run: echo "Regions: ${{ fromJson(steps.read-regions.outputs.regions) }}"
 
   run-tests:
     runs-on: ubuntu-latest
