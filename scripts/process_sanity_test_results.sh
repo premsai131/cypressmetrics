@@ -13,43 +13,44 @@ echo "Listing all directories and files inside 'test_results':"
 for dir in test_results/*; do
   if [[ -d "$dir" ]]; then
     echo "Directory: $dir"
-    ls -alh "$dir"  # List files inside the directory
+    ls -alh "$dir"
   fi
 done
 
 echo "===================================================="
 
-# Initialize counters for total tests, passed, and failed
+# Initialize counters
 total_tests=0
 total_passed=0
 total_failed=0
 
-# Find all JSON files inside test_results (including subdirectories)
-echo "Searching for test-results-*.json files..."
-for file in $(find test_results -type f -name "test_results_*.json"); do
+echo "Searching for test_results_*.json files..."
+while IFS= read -r -d '' file; do
   if [[ -f "$file" ]]; then
-    echo "Processing file: $file"  # Debugging
-
-    # Make sure jq is parsing the JSON correctly
-    tests=$(jq '.total_tests' "$file")
+    echo "Processing file: $file"
+    
+    tests=$(jq '.totalTests' "$file")
     passed=$(jq '.passed' "$file")
     failed=$(jq '.failed' "$file")
 
-    if [[ $? -eq 0 ]]; then
+    tests=${tests:-0}
+    passed=${passed:-0}
+    failed=${failed:-0}
+
+    if [[ "$tests" =~ ^[0-9]+$ && "$passed" =~ ^[0-9]+$ && "$failed" =~ ^[0-9]+$ ]]; then
       total_tests=$((total_tests + tests))
       total_passed=$((total_passed + passed))
       total_failed=$((total_failed + failed))
     else
-      echo "Error parsing JSON file: $file"
+      echo "Invalid values in $file – skipping"
     fi
   fi
-done
+done < <(find test_results -type f -name "test_results_*.json" -print0)
 
 echo "TOTAL TESTS: $total_tests"
 echo "TOTAL PASSED: $total_passed"
 echo "TOTAL FAILED: $total_failed"
 
-# Determine Test Status
 if [[ $total_failed -gt 0 ]]; then
   test_status="FAILED"
 elif [[ $total_tests -eq 0 ]]; then
@@ -60,8 +61,8 @@ fi
 
 echo "TEST STATUS: $test_status"
 
-# Set GitHub outputs
-echo "total_tests=$total_tests" >> $GITHUB_ENV
-echo "total_passed=$total_passed" >> $GITHUB_ENV
-echo "total_failed=$total_failed" >> $GITHUB_ENV
-echo "test_status=$test_status" >> $GITHUB_ENV
+# Export to GitHub environment
+echo "total_tests=$total_tests" >> "$GITHUB_ENV"
+echo "total_passed=$total_passed" >> "$GITHUB_ENV"
+echo "total_failed=$total_failed" >> "$GITHUB_ENV"
+echo "test_status=$test_status" >> "$GITHUB_ENV"
