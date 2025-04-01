@@ -48,9 +48,6 @@ jobs:
             regions=$(yq '.regions' "${{ github.workspace }}/modified_sanityconfig.yml" -o json | jq -r tostring)
             echo "regions=$regions" >> $GITHUB_OUTPUT
 
-      # Debug Regions Output
-      - name: Debug Regions Output
-        run: echo "Regions: ${{ fromJson(steps.read-regions.outputs.regions) }}"
 
   run-tests:
     runs-on: ubuntu-latest
