@@ -1,15 +1,16 @@
 import * as fs from "fs";
 import * as path from "path";
 
-const REPORT_DIR = path.resolve("report"); // Absolute path based on the execution directory // Path to test reports
-const OUTPUT_JSON_FILE = path.resolve("test_results.json"); // Default output file
+// Resolving paths to the root of the project
+const REPORT_DIR = path.resolve("report");  // Report folder is at the root of the project
+const OUTPUT_JSON_FILE = path.resolve("test_results.json");  // Default output file at the root level
 
 // Get the container name from an environment variable
 const MATRIX_CONTAINER = process.env.MATRIX_CONTAINER || ""; 
 
 // If MATRIX_CONTAINER is set, generate a unique file name
 const MATRIX_OUTPUT_JSON_FILE = MATRIX_CONTAINER
-  ? path.resolve(`test_results_${MATRIX_CONTAINER}.json`) // Writes to root
+  ? path.resolve(`test_results_${MATRIX_CONTAINER}.json`)  // Writes directly to the root level
   : OUTPUT_JSON_FILE;
 
 async function getAllJsonFilesAsync(dir: string): Promise<string[]> {
@@ -106,6 +107,7 @@ async function processTestReports(): Promise<void> {
     testStatus,
   };
 
+  // Writing the output file directly to the root level
   await fs.promises.writeFile(
     MATRIX_OUTPUT_JSON_FILE,
     JSON.stringify(results, null, 2)
