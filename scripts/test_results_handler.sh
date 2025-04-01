@@ -18,7 +18,7 @@ rm -rf node_modules package-lock.json
 npm install
 
 echo "Running test results parser..."
-npx ts-node parseTestReports.ts -o "$OUTPUT_FILE" || { 
+node scripts/parseTestReports.js -o "$OUTPUT_FILE" || { 
   echo "Error: Test results parsing failed!"
   exit 1
 }
