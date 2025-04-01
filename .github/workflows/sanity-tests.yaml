@@ -176,11 +176,6 @@ jobs:
         with:
           path: test_results  # All artifacts will be downloaded to this folder
   
-      - name: Debug - Check Downloaded Artifacts
-        run: |
-          echo "Listing files in the test_results directory after download..."
-          ls -alh test_results  # Confirm the presence of the test results in the folder
-  
       - name: Debug - Check Directory Content
         run: |
           echo "Listing contents of the current working directory..."
