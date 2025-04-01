@@ -125,8 +125,9 @@ jobs:
         id: extract
         run: |
           export WORKSPACE_ID=${{ matrix.region.workspace_id }}
-          chmod +x ./test_results_handler.sh
-          ./test_results_handler.sh true
+          chmod +x ${{ github.workspace }}/src/github.com/${{ github.repository }}/scripts/test_results_handler.sh
+          ${{ github.workspace }}/src/github.com/${{ github.repository }}/scripts/test_results_handler.sh true
+
 
       - name: Upload Test Results as Artifact
         if: always() 
@@ -155,7 +156,9 @@ jobs:
 
       - name: Process Test Results
         id: process
-        run: .github/scripts/process_sanity_test_results.sh
+        run: |
+          chmod +x ${{ github.workspace }}/src/github.com/${{ github.repository }}/.github/scripts/process_sanity_test_results.sh
+          ${{ github.workspace }}/src/github.com/${{ github.repository }}/.github/scripts/process_sanity_test_results.sh
 
       - name: Set Job Outputs
         run: |
