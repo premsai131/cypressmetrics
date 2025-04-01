@@ -171,11 +171,11 @@ jobs:
           path: ${{ github.workspace }}/src/github.com/${{ github.repository }}
           ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
   
-        - name: Download Test Results Artifact
-          uses: actions/download-artifact@v3
-          with:
-            name: test-results-artifact  # Replace with the actual artifact name
-            path: ${{ github.workspace }}/src/github.com/${{ github.repository }}/test_results
+      - name: Download Test Results Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: test-results-artifact  # Replace with the actual artifact name
+          path: ${{ github.workspace }}/src/github.com/${{ github.repository }}/test_results
 
   
       - name: Debug Working Directory
