@@ -39,9 +39,9 @@ jobs:
       - name: Filter yaml for fintech service or use default config
         run: |
           if [[ "${{ github.repository }}" == *"fintech-service"* ]]; then
-            yq '.regions |= map(select(.fintech_deployed == true))' "${{ github.workspace }}/sanityconfig.yml" > "${{ github.workspace }}/modified_sanityconfig.yml"
+            yq '.regions |= map(select(.fintech_deployed == true))' "${{ github.workspace }}/.github/workflows/sanityconfig.yml" > "${{ github.workspace }}/.github/workflows/modified_sanityconfig.yml"
           else
-            cp "${{ github.workspace }}/sanityconfig.yml" "${{ github.workspace }}/modified_sanityconfig.yml"
+            cp "${{ github.workspace }}/.github/workflows/sanityconfig.yml" "${{ github.workspace }}/.github/workflows/modified_sanityconfig.yml"
           fi
 
       # Read Region details from the YAML file
