@@ -2,8 +2,9 @@
 
 set -e  # Exit on error
 
-RESULTS_DIR="$GITHUB_WORKSPACE/report"
-OUTPUT_FILE="$GITHUB_WORKSPACE/test_results.json"
+# Updated to work with root directory for output files
+RESULTS_DIR="./report"  # This remains unchanged if you want to keep a separate report folder for test results.
+OUTPUT_FILE="test_results.json"  # Create the output file at the root level
 
 # Read the first argument ($1) to decide whether to skip GitHub output
 SKIP_GITHUB_OUTPUT="$1"
@@ -14,21 +15,17 @@ else
   echo "Using MATRIX_CONTAINER: $MATRIX_CONTAINER"
 fi
 
-# Ensure output file is stored inside GITHUB_WORKSPACE
+# Ensure output file is stored inside the root directory
 if [ -n "$MATRIX_CONTAINER" ]; then
-  OUTPUT_FILE="$GITHUB_WORKSPACE/test_results_${MATRIX_CONTAINER}.json"
+  OUTPUT_FILE="test_results_${MATRIX_CONTAINER}.json"  # Ensure file is at root level
 fi
 
 echo "Test results will be stored at: $OUTPUT_FILE"
 
-# Debugging: Print out the file location and other relevant environment variables
-echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-echo "OUTPUT_FILE: $OUTPUT_FILE"
-echo "RESULTS_DIR: $RESULTS_DIR"
-
-if [ ! -d "$RESULTS_DIR" ]; then
-  echo "Error: Test results directory '$RESULTS_DIR' not found!"
-  exit 1
+# Install jq if not available
+if ! command -v jq &> /dev/null; then
+  echo "jq is not installed. Installing..."
+  sudo apt-get install -y jq
 fi
 
 echo "Installing dependencies..."
@@ -41,18 +38,23 @@ MATRIX_CONTAINER="$MATRIX_CONTAINER" npx ts-node scripts/parseTestReports.ts -o 
   exit 1
 }
 
-# Ensure file is written correctly before proceeding
-sleep 2  # Add a small delay to allow file system sync
-
 if [ ! -f "$OUTPUT_FILE" ]; then
   echo "Error: $OUTPUT_FILE not found!"
   exit 1
 fi
 
+# Parse results from the JSON output
 TOTAL_TESTS=$(jq -r '.totalTests // 0' "$OUTPUT_FILE")
 FAILED_TESTS=$(jq -r '.failed // 0' "$OUTPUT_FILE")
 PASSED_TESTS=$(jq -r '.passed // 0' "$OUTPUT_FILE")
-TEST_STATUS=$(jq -r '.testStatus // "UNKNOWN"' "$OUTPUT_FILE")  
+TEST_STATUS=$(jq -r '.testStatus // "UNKNOWN"' "$OUTPUT_FILE")
+
+# Log the extracted data for debugging purposes
+echo "Extracted Test Results:"
+echo "TOTAL_TESTS=$TOTAL_TESTS"
+echo "FAILED_TESTS=$FAILED_TESTS"
+echo "PASSED_TESTS=$PASSED_TESTS"
+echo "TEST_STATUS=$TEST_STATUS"
 
 # Conditionally set GitHub outputs
 if [ "$SKIP_GITHUB_OUTPUT" != "true" ]; then
