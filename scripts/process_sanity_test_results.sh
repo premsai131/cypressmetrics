@@ -1,5 +1,16 @@
 #!/bin/bash
 
+echo "====== Inside process_sanity_test_results.sh ======"
+echo "Current working directory inside the script:"
+pwd
+echo "Listing all files in the current directory:"
+ls -alh
+echo "Checking if test_results exists:"
+ls -alh test_results || echo "test_results directory not found"
+echo "Finding all test-results-*.json files:"
+find . -type f -name "test-results-*.json" || echo "No test result files found"
+echo "===================================================="
+
 total_tests=0
 total_passed=0
 total_failed=0
