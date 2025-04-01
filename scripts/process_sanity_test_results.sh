@@ -61,8 +61,9 @@ fi
 
 echo "TEST STATUS: $test_status"
 
-# Export to GitHub environment
-echo "total_tests=$total_tests" >> "$GITHUB_ENV"
-echo "total_passed=$total_passed" >> "$GITHUB_ENV"
-echo "total_failed=$total_failed" >> "$GITHUB_ENV"
-echo "test_status=$test_status" >> "$GITHUB_ENV"
+# Set GitHub Action outputs for downstream jobs
+echo "TEST_STATUS=$test_status" >> "$GITHUB_OUTPUT"
+echo "TOTAL_TESTS=$total_tests" >> "$GITHUB_OUTPUT"
+echo "PASSED_TESTS=$total_passed" >> "$GITHUB_OUTPUT"
+echo "FAILED_TESTS=$total_failed" >> "$GITHUB_OUTPUT"
+
