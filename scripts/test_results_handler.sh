@@ -3,7 +3,7 @@
 set -e  # Exit on error
 
 RESULTS_DIR="./report"
-OUTPUT_FILE="./test_results.json"
+OUTPUT_FILE="$GITHUB_WORKSPACE/test_results.json"
 
 # Read the first argument ($1) to decide whether to skip GitHub output
 SKIP_GITHUB_OUTPUT="$1"
@@ -14,9 +14,12 @@ else
   echo "Using MATRIX_CONTAINER: $MATRIX_CONTAINER"
 fi
 
+# Ensure output file is stored inside GITHUB_WORKSPACE
 if [ -n "$MATRIX_CONTAINER" ]; then
-  OUTPUT_FILE="./test_results_${MATRIX_CONTAINER}.json"
+  OUTPUT_FILE="$GITHUB_WORKSPACE/test_results_${MATRIX_CONTAINER}.json"
 fi
+
+echo "Test results will be stored at: $OUTPUT_FILE"
 
 if [ ! -d "$RESULTS_DIR" ]; then
   echo "Error: Test results directory '$RESULTS_DIR' not found!"
