@@ -9,7 +9,7 @@ const MATRIX_CONTAINER = process.env.MATRIX_CONTAINER || "";
 
 // If MATRIX_CONTAINER is set, generate a unique file name
 const MATRIX_OUTPUT_JSON_FILE = MATRIX_CONTAINER
-  ? path.join(__dirname, `test_results_${MATRIX_CONTAINER}.json`)
+  ? path.resolve(`test_results_${MATRIX_CONTAINER}.json`) // Writes to root
   : OUTPUT_JSON_FILE;
 
 async function getAllJsonFilesAsync(dir: string): Promise<string[]> {
