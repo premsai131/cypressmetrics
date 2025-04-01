@@ -1,12 +1,18 @@
 #!/bin/bash
 
-set -e  
+set -e  # Exit on error
 
 RESULTS_DIR="./report"
 OUTPUT_FILE="./test_results.json"
 
 # Read the first argument ($1) to decide whether to skip GitHub output
 SKIP_GITHUB_OUTPUT="$1"
+
+if [ -z "$MATRIX_CONTAINER" ]; then
+  echo "Warning: MATRIX_CONTAINER is not set!"
+else
+  echo "Using MATRIX_CONTAINER: $MATRIX_CONTAINER"
+fi
 
 if [ ! -d "$RESULTS_DIR" ]; then
   echo "Error: Test results directory '$RESULTS_DIR' not found!"
@@ -18,7 +24,7 @@ rm -rf node_modules package-lock.json
 npm install
 
 echo "Running test results parser..."
-npx ts-node scripts/parseTestReports.ts -o "$OUTPUT_FILE" || { 
+MATRIX_CONTAINER="$MATRIX_CONTAINER" npx ts-node scripts/parseTestReports.ts -o "$OUTPUT_FILE" || { 
   echo "Error: Test results parsing failed!"
   exit 1
 }
