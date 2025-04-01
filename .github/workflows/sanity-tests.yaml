@@ -131,16 +131,19 @@ jobs:
           MATRIX_CONTAINER: ${{ matrix.region.workspace_id }}  # Explicitly set for subprocesses
 
       - name: Debug - List files in the directory
+        if: always() 
         run: |
           echo "Listing files in the current directory..."
           ls -alh      
+      - name: Debug: Print Current Directory
+        run: pwd
 
       - name: Upload Test Results as Artifact
         if: always() 
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.region.workspace_id }}
-          path: test_results_${{ matrix.region.workspace_id }}.json  # Simplified relative path
+          path: ./test_results_${{ matrix.region.workspace_id }}.json  # Simplified relative path
 
 
   process-results:
