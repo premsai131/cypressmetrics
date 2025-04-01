@@ -129,7 +129,12 @@ jobs:
           scripts/test_results_handler.sh true  # Relative path
         env:
           MATRIX_CONTAINER: ${{ matrix.region.workspace_id }}  # Explicitly set for subprocesses
-      
+
+      - name: Debug - List files in the directory
+        run: |
+          echo "Listing files in the current directory..."
+          ls -alh      
+
       - name: Upload Test Results as Artifact
         if: always() 
         uses: actions/upload-artifact@v4
