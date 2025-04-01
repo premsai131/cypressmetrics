@@ -7,8 +7,9 @@ echo "Listing all files in the current directory:"
 ls -alh
 echo "Checking if test_results exists:"
 ls -alh test_results || echo "test_results directory not found"
-echo "Finding all test-results-*.json files:"
-find . -type f -name "test-results-*.json" || echo "No test result files found"
+
+echo "Finding all test-results-*.json files in test_results and its subdirectories:"
+find test_results -type f -name "test-results-*.json" -print || echo "No test result files found"
 echo "===================================================="
 
 total_tests=0
