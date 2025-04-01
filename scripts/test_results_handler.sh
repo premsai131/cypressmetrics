@@ -14,6 +14,10 @@ else
   echo "Using MATRIX_CONTAINER: $MATRIX_CONTAINER"
 fi
 
+if [ -n "$MATRIX_CONTAINER" ]; then
+  OUTPUT_FILE="./test_results_${MATRIX_CONTAINER}.json"
+fi
+
 if [ ! -d "$RESULTS_DIR" ]; then
   echo "Error: Test results directory '$RESULTS_DIR' not found!"
   exit 1
