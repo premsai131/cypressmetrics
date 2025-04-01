@@ -125,19 +125,17 @@ jobs:
         id: extract
         run: |
           export MATRIX_CONTAINER=${{ matrix.region.workspace_id }}  # Export for shell script
-          chmod +x ${{ github.workspace }}/src/github.com/${{ github.repository }}/scripts/test_results_handler.sh
-          ${{ github.workspace }}/src/github.com/${{ github.repository }}/scripts/test_results_handler.sh true
+          chmod +x $GITHUB_WORKSPACE/src/github.com/${{ github.repository }}/scripts/test_results_handler.sh
+          $GITHUB_WORKSPACE/src/github.com/${{ github.repository }}/scripts/test_results_handler.sh true
         env:
           MATRIX_CONTAINER: ${{ matrix.region.workspace_id }}  # Explicitly set for subprocesses
-
-
-
+  
       - name: Upload Test Results as Artifact
         if: always() 
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.region.workspace_id }}
-          path: test_results_${{ matrix.region.workspace_id }}.json
+          path: ${{ github.workspace }}/test_results_${{ matrix.region.workspace_id }}.json
 
   process-results:
     name: Process Test Results
