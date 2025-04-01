@@ -170,22 +170,30 @@ jobs:
           fetch-depth: 0
           path: ${{ github.workspace }}/src/github.com/${{ github.repository }}
           ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
-
+  
       - name: Download All Test Result Artifacts
         uses: actions/download-artifact@v4
         with:
           path: test_results  # All artifacts will be downloaded to this folder
-
-      - name: Debug - Check Files
+  
+      - name: Debug - Check Downloaded Artifacts
         run: |
-          ls -alh test_results
-
+          echo "Listing files in the test_results directory after download..."
+          ls -alh test_results  # Confirm the presence of the test results in the folder
+  
+      - name: Debug - Check Directory Content
+        run: |
+          echo "Listing contents of the current working directory..."
+          ls -alh ${{ github.workspace }}  # List files in the GitHub workspace to see structure
+  
       - name: Process Test Results
         id: process
         run: |
+          echo "Changing file permissions for the script..."
           chmod +x ./scripts/process_sanity_test_results.sh
+          echo "Running the process script..."
           ./scripts/process_sanity_test_results.sh
-
+  
       - name: Set Job Outputs
         run: |
           echo "TEST_STATUS=${{ env.test_status }}" >> $GITHUB_OUTPUT
