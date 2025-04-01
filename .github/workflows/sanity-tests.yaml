@@ -134,8 +134,9 @@ jobs:
         if: always() 
         run: |
           echo "Listing files in the current directory..."
-          ls -alh      
-      - name: Debug: Print Current Directory
+          ls -alh 
+
+      - name: Debug- Print Current Directory
         run: pwd
 
       - name: Upload Test Results as Artifact
