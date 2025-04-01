@@ -19,26 +19,6 @@ on:
         description: "Service name. Optional"
         required: false
 
-  workflow_call:
-    inputs:
-      config-file:
-        type: string
-        description: "Config file name"
-        required: true
-      branch:
-          type: string
-          description: "Branch on which tests are to run"
-          required: false
-      trigger-event:
-        type: string
-        description: "Event that triggered the workflow. Optional"
-        required: false
-      service-name:
-        type: string
-        description: "Service name. Optional"
-        required: false
-
-
 jobs:
   read-regions:
     runs-on: ubuntu-latest
@@ -59,13 +39,18 @@ jobs:
       - name: Filter yaml if fintech service
         if: ${{ contains( github.repository , 'fintech-service') }}
         run: |
-          yq '.regions |= map(select(.fintech_deployed == true))' "${{ env.region_config_file }}" > "${{ env.modified_config_file }}"
+          yq '.regions |= map(select(.fintech_deployed == true))' "${{ github.workspace }}/sanityconfig.yml" > "${{ github.workspace }}/modified_sanityconfig.yml"
       
+      # Read Region details from the YAML file
       - name: Read Region details
         id: read-regions
         run: |
-            regions=$(yq '.regions' ${{ env.modified_config_file }} -o json | jq -r tostring)
+            regions=$(yq '.regions' "${{ github.workspace }}/modified_sanityconfig.yml" -o json | jq -r tostring)
             echo "regions=$regions" >> $GITHUB_OUTPUT
+
+      # Debug Regions Output
+      - name: Debug Regions Output
+        run: echo "Regions: ${{ steps.read-regions.outputs.regions }}"
 
   run-tests:
     runs-on: ubuntu-latest
@@ -90,9 +75,6 @@ jobs:
           fetch-depth: 0
           path: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
           ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
-      - name: Install Ginkgo
-        run: |
-            go install github.com/onsi/ginkgo/v2/ginkgo@v2.17.1
       - name: Add region details in config file
         run: |
             printf "\nWORKSPACEID: ${{matrix.region.workspace_id}}" >> ${GITHUB_WORKSPACE}/config.yaml
@@ -158,6 +140,3 @@ jobs:
           echo "TOTAL TESTS: ${{ needs.process-results.outputs.TOTAL_TESTS }}"
           echo "FAILED TESTS: ${{ needs.process-results.outputs.FAILED_TESTS }}"
           echo "PASSED TESTS: ${{ needs.process-results.outputs.PASSED_TESTS }}"
-
-
-  
