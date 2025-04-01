@@ -153,6 +153,8 @@ jobs:
     name: Process Test Results
     runs-on: ubuntu-latest
     needs: run-tests  
+    env:
+      GOPATH: ${{ github.workspace }}
     outputs:
       TEST_STATUS: ${{ steps.process.outputs.TEST_STATUS }}
       TOTAL_TESTS: ${{ steps.process.outputs.TOTAL_TESTS }}
@@ -160,15 +162,23 @@ jobs:
       PASSED_TESTS: ${{ steps.process.outputs.PASSED_TESTS }}
     defaults:
       run:
-        working-directory: ${{ github.workspace }}/src/github.com/${{ github.repository }}
+        working-directory: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: ${{ github.workspace }}/src/github.com/${{ github.repository }}
+          ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
 
       - name: Download All Test Result Artifacts
         uses: actions/download-artifact@v4
         with:
           path: test_results  # All artifacts will be downloaded to this folder
+
+      - name: Debug - Check Files
+        run: |
+          ls -alh test_results
 
       - name: Process Test Results
         id: process
