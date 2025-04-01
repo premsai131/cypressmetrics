@@ -38,10 +38,15 @@ MATRIX_CONTAINER="$MATRIX_CONTAINER" npx ts-node scripts/parseTestReports.ts -o 
   exit 1
 }
 
+# Print the current working directory for debugging
+echo "Current working directory: $(pwd)"
+
+# Check if the output file exists
 if [ ! -f "$OUTPUT_FILE" ]; then
   echo "Error: $OUTPUT_FILE not found!"
   exit 1
 fi
+
 
 # Parse results from the JSON output
 TOTAL_TESTS=$(jq -r '.totalTests // 0' "$OUTPUT_FILE")
