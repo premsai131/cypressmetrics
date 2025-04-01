@@ -1,23 +1,5 @@
 name: Run Tests
 on:
-  workflow_call:
-    inputs:
-      config-file:
-        type: string
-        description: "Config file name"
-        required: true
-      branch:
-          type: string
-          description: "Branch on which tests are to run"
-          required: false
-      trigger-event:
-        type: string
-        description: "Event that triggered the workflow. Optional"
-        required: false
-      service-name:
-        type: string
-        description: "Service name. Optional"
-        required: false
   workflow_dispatch:
     inputs:
       config-file:
@@ -28,6 +10,25 @@ on:
         type: string
         description: "Branch on which tests are to run"
         required: false
+      trigger-event:
+        type: string
+        description: "Event that triggered the workflow. Optional"
+        required: false
+      service-name:
+        type: string
+        description: "Service name. Optional"
+        required: false
+
+  workflow_call:
+    inputs:
+      config-file:
+        type: string
+        description: "Config file name"
+        required: true
+      branch:
+          type: string
+          description: "Branch on which tests are to run"
+          required: false
       trigger-event:
         type: string
         description: "Event that triggered the workflow. Optional"
@@ -89,6 +90,9 @@ jobs:
           fetch-depth: 0
           path: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
           ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
+      - name: Install Ginkgo
+        run: |
+            go install github.com/onsi/ginkgo/v2/ginkgo@v2.17.1
       - name: Add region details in config file
         run: |
             printf "\nWORKSPACEID: ${{matrix.region.workspace_id}}" >> ${GITHUB_WORKSPACE}/config.yaml
