@@ -121,12 +121,15 @@ jobs:
           printf "\nFINTECH_DEPLOYED: ${{matrix.region.fintech_deployed}}" >> ${GITHUB_WORKSPACE}/config.yaml
 
       - name: Parse Test Results & Extract Metrics
-        if: always() 
+        if: always()
         id: extract
         run: |
-          export WORKSPACE_ID=${{ matrix.region.workspace_id }}
+          export MATRIX_CONTAINER=${{ matrix.region.workspace_id }}  # Export for shell script
           chmod +x ${{ github.workspace }}/src/github.com/${{ github.repository }}/scripts/test_results_handler.sh
           ${{ github.workspace }}/src/github.com/${{ github.repository }}/scripts/test_results_handler.sh true
+        env:
+          MATRIX_CONTAINER: ${{ matrix.region.workspace_id }}  # Explicitly set for subprocesses
+
 
 
       - name: Upload Test Results as Artifact
@@ -145,6 +148,9 @@ jobs:
       TOTAL_TESTS: ${{ steps.process.outputs.TOTAL_TESTS }}
       FAILED_TESTS: ${{ steps.process.outputs.FAILED_TESTS }}
       PASSED_TESTS: ${{ steps.process.outputs.PASSED_TESTS }}
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/src/github.com/${{ github.repository }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
