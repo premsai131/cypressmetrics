@@ -4,9 +4,11 @@ total_tests=0
 total_passed=0
 total_failed=0
 
-# Loop through all test result files
-for file in test_results/test-results-*; do
+# Find all JSON files inside test_results (including subdirectories)
+for file in $(find test_results -type f -name "test-results-*.json"); do
   if [[ -f "$file" ]]; then
+    echo "Processing file: $file"  # Debugging
+
     tests=$(jq '.total_tests' "$file")
     passed=$(jq '.passed' "$file")
     failed=$(jq '.failed' "$file")
