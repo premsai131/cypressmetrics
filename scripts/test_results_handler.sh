@@ -2,7 +2,7 @@
 
 set -e  # Exit on error
 
-RESULTS_DIR="./report"
+RESULTS_DIR="$GITHUB_WORKSPACE/report"
 OUTPUT_FILE="$GITHUB_WORKSPACE/test_results.json"
 
 # Read the first argument ($1) to decide whether to skip GitHub output
@@ -21,6 +21,11 @@ fi
 
 echo "Test results will be stored at: $OUTPUT_FILE"
 
+# Debugging: Print out the file location and other relevant environment variables
+echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+echo "OUTPUT_FILE: $OUTPUT_FILE"
+echo "RESULTS_DIR: $RESULTS_DIR"
+
 if [ ! -d "$RESULTS_DIR" ]; then
   echo "Error: Test results directory '$RESULTS_DIR' not found!"
   exit 1
@@ -35,6 +40,9 @@ MATRIX_CONTAINER="$MATRIX_CONTAINER" npx ts-node scripts/parseTestReports.ts -o 
   echo "Error: Test results parsing failed!"
   exit 1
 }
+
+# Ensure file is written correctly before proceeding
+sleep 2  # Add a small delay to allow file system sync
 
 if [ ! -f "$OUTPUT_FILE" ]; then
   echo "Error: $OUTPUT_FILE not found!"
