@@ -174,7 +174,6 @@ jobs:
       - name: Download Test Results Artifact
         uses: actions/download-artifact@v4
         with:
-          name: test-results-artifact  # Replace with the actual artifact name
           path: ${{ github.workspace }}/src/github.com/${{ github.repository }}/test_results
 
   
