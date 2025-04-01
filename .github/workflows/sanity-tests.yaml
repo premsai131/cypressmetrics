@@ -34,7 +34,8 @@ jobs:
           fetch-depth: 0
           path: ${{ github.workspace }}/src/github.com/${{ github.repository }}
           ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
-
+      - name: Check the files in the workspace
+        run: ls -la ${{ github.workspace }}
       # Filter yaml if fintech service or else use the default sanityconfig.yml
       - name: Filter yaml for fintech service or use default config
         run: |
