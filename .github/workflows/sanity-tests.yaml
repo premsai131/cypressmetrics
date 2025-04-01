@@ -1,0 +1,159 @@
+name: Run Tests
+on:
+  workflow_call:
+    inputs:
+      config-file:
+        type: string
+        description: "Config file name"
+        required: true
+      branch:
+          type: string
+          description: "Branch on which tests are to run"
+          required: false
+      trigger-event:
+        type: string
+        description: "Event that triggered the workflow. Optional"
+        required: false
+      service-name:
+        type: string
+        description: "Service name. Optional"
+        required: false
+  workflow_dispatch:
+    inputs:
+      config-file:
+        type: string
+        description: "Config file name"
+        required: true
+      branch:
+        type: string
+        description: "Branch on which tests are to run"
+        required: false
+      trigger-event:
+        type: string
+        description: "Event that triggered the workflow. Optional"
+        required: false
+      service-name:
+        type: string
+        description: "Service name. Optional"
+        required: false
+
+
+jobs:
+  read-regions:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/src/github.com/${{ github.repository }}
+    outputs:
+      regions: ${{ steps.read-regions.outputs.regions }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: ${{ github.workspace }}/src/github.com/${{ github.repository }}
+          ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
+
+      # Extra step to filter out the region details for fintech service
+      - name: Filter yaml if fintech service
+        if: ${{ contains( github.repository , 'fintech-service') }}
+        run: |
+          yq '.regions |= map(select(.fintech_deployed == true))' "${{ env.region_config_file }}" > "${{ env.modified_config_file }}"
+      
+      - name: Read Region details
+        id: read-regions
+        run: |
+            regions=$(yq '.regions' ${{ env.modified_config_file }} -o json | jq -r tostring)
+            echo "regions=$regions" >> $GITHUB_OUTPUT
+
+  run-tests:
+    runs-on: ubuntu-latest
+    needs: read-regions
+    strategy:
+      matrix:
+        region: ${{ fromJson(needs.read-regions.outputs.regions) }}
+        go-version: [1.21.x]
+      fail-fast: false
+    env:
+      GOPATH: ${{ github.workspace }}
+      GOBIN: ${{ github.workspace }}/bin
+      BUILD_NUMBER: ${{ github.run_number }}
+      BACKEND_SECRETS_FILE: ${{ secrets[format('{0}', inputs.config-file)] }}
+    defaults:
+      run:
+        working-directory: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
+          ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
+      - name: Add region details in config file
+        run: |
+            printf "\nWORKSPACEID: ${{matrix.region.workspace_id}}" >> ${GITHUB_WORKSPACE}/config.yaml
+            printf "\nPDBADDRESS: ${{matrix.region.data_plane_url}}" >> ${GITHUB_WORKSPACE}/config.yaml
+            printf "\nVAULTID: ${{matrix.region.vault_id}}" >> ${GITHUB_WORKSPACE}/config.yaml
+            printf "\nFUNCTION_DEPLOYED: ${{matrix.region.functions_deployed}}" >> ${GITHUB_WORKSPACE}/config.yaml
+            printf "\nFINTECH_DEPLOYED: ${{matrix.region.fintech_deployed}}" >> ${GITHUB_WORKSPACE}/config.yaml
+
+      - name: Parse Test Results & Extract Metrics
+        if: always() 
+        id: extract
+        run: |
+          export WORKSPACE_ID=${{ matrix.region.workspace_id }}
+          chmod +x ./test_results_handler.sh
+          ./test_results_handler.sh true
+
+      - name: Upload test results as artifact
+        if: always() 
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-${{ matrix.region.workspace_id }}
+          path: test_results_${{ matrix.region.workspace_id }}.json
+
+
+  process-results:
+    name: Process Test Results
+    runs-on: ubuntu-latest
+    needs: run-tests  
+    outputs:
+      TEST_STATUS: ${{ steps.process.outputs.TEST_STATUS }}
+      TOTAL_TESTS: ${{ steps.process.outputs.TOTAL_TESTS }}
+      FAILED_TESTS: ${{ steps.process.outputs.FAILED_TESTS }}
+      PASSED_TESTS: ${{ steps.process.outputs.PASSED_TESTS }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+  
+      - name: Download all test result artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: test_results  # All artifacts will be downloaded to this folder
+  
+      - name: Process test results
+        id: process
+        run: .github/scripts/process_sanity_test_results.sh
+  
+      - name: Set Job Outputs
+        run: |
+          echo "TEST_STATUS=${{ env.test_status }}" >> $GITHUB_OUTPUT
+          echo "TOTAL_TESTS=${{ env.total_tests }}" >> $GITHUB_OUTPUT
+          echo "PASSED_TESTS=${{ env.total_passed }}" >> $GITHUB_OUTPUT
+          echo "FAILED_TESTS=${{ env.total_failed }}" >> $GITHUB_OUTPUT
+  
+  
+  call-pdt-metrics:
+    if: always() 
+    needs: process-results
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Test Metrics
+        run: |
+          echo "TEST STATUS: ${{ needs.process-results.outputs.TEST_STATUS }}"
+          echo "TOTAL TESTS: ${{ needs.process-results.outputs.TOTAL_TESTS }}"
+          echo "FAILED TESTS: ${{ needs.process-results.outputs.FAILED_TESTS }}"
+          echo "PASSED TESTS: ${{ needs.process-results.outputs.PASSED_TESTS }}"
+
+
+  
