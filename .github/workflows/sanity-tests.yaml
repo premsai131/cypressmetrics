@@ -28,31 +28,64 @@ jobs:
     outputs:
       regions: ${{ steps.read-regions.outputs.regions }}
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           path: ${{ github.workspace }}/src/github.com/${{ github.repository }}
           ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
 
-      # Filter yaml if fintech service or else use the default sanityconfig.yml
-      - name: Filter yaml for fintech service or use default config
+      - name: Debug Paths & List Files
         run: |
+          echo "Workspace Path: ${{ github.workspace }}"
+          echo "Checking files in .github/workflows directory"
+          ls -alR ${{ github.workspace }}/src/github.com/${{ github.repository }}/.github/workflows || echo "No files found"
+
+      - name: Filter YAML for fintech service or use default config
+        run: |
+          set -e  # Exit if any command fails
+          
           CONFIG_PATH="${{ github.workspace }}/src/github.com/${{ github.repository }}/.github/workflows/sanityconfig.yml"
           MODIFIED_CONFIG_PATH="${{ github.workspace }}/src/github.com/${{ github.repository }}/.github/workflows/modified_sanityconfig.yml"
+          
+          echo "Checking if yq is installed..."
+          yq --version || { echo "yq not found!"; exit 1; }
+          
+          echo "Original Config Path: $CONFIG_PATH"
+          echo "Modified Config Path: $MODIFIED_CONFIG_PATH"
+
           if [[ "${{ github.repository }}" == *"fintech-service"* ]]; then
-            yq '.regions |= map(select(.fintech_deployed == true))' "$CONFIG_PATH" > "$MODIFIED_CONFIG_PATH"
+            echo "Applying fintech filter..."
+            yq '.regions |= map(select(.fintech_deployed == true))' "$CONFIG_PATH" > "$MODIFIED_CONFIG_PATH" || { echo "yq command failed!"; exit 1; }
           else
-            cp "$CONFIG_PATH" "$MODIFIED_CONFIG_PATH"
+            echo "Copying default config..."
+            cp "$CONFIG_PATH" "$MODIFIED_CONFIG_PATH" || { echo "cp command failed!"; exit 1; }
           fi
 
+          echo "Verifying modified config file existence..."
+          ls -al "$MODIFIED_CONFIG_PATH" || { echo "Modified config file not found!"; exit 1; }
 
-      # Read Region details from the YAML file
-      - name: Read Region details
+      - name: Read Region Details
         id: read-regions
         run: |
-            regions=$(yq '.regions' "${{ github.workspace }}/modified_sanityconfig.yml" -o json | jq -r tostring)
-            echo "regions=$regions" >> $GITHUB_OUTPUT
+          set -e  # Exit if any command fails
+
+          CONFIG_PATH="${{ github.workspace }}/src/github.com/${{ github.repository }}/.github/workflows/modified_sanityconfig.yml"
+          
+          echo "Checking if modified config file exists..."
+          if [[ ! -f "$CONFIG_PATH" ]]; then
+            echo "Error: $CONFIG_PATH does not exist!"
+            exit 1
+          fi
+
+          echo "Checking if jq is installed..."
+          jq --version || { echo "jq not found!"; exit 1; }
+
+          echo "Reading regions from YAML..."
+          regions=$(yq '.regions' "$CONFIG_PATH" -o json | jq -r tostring)
+
+          echo "regions=$regions" >> $GITHUB_OUTPUT
+          echo "Regions extracted: $regions"
 
   run-tests:
     runs-on: ubuntu-latest
@@ -71,19 +104,21 @@ jobs:
       run:
         working-directory: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           path: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}
           ref: ${{ inputs.branch || github.event.pull_request.head.ref }}
-      - name: Add region details in config file
+
+      - name: Add Region Details in Config File
         run: |
-            printf "\nWORKSPACEID: ${{matrix.region.workspace_id}}" >> ${GITHUB_WORKSPACE}/config.yaml
-            printf "\nPDBADDRESS: ${{matrix.region.data_plane_url}}" >> ${GITHUB_WORKSPACE}/config.yaml
-            printf "\nVAULTID: ${{matrix.region.vault_id}}" >> ${GITHUB_WORKSPACE}/config.yaml
-            printf "\nFUNCTION_DEPLOYED: ${{matrix.region.functions_deployed}}" >> ${GITHUB_WORKSPACE}/config.yaml
-            printf "\nFINTECH_DEPLOYED: ${{matrix.region.fintech_deployed}}" >> ${GITHUB_WORKSPACE}/config.yaml
+          echo "Adding region details to config.yaml"
+          printf "\nWORKSPACEID: ${{matrix.region.workspace_id}}" >> ${GITHUB_WORKSPACE}/config.yaml
+          printf "\nPDBADDRESS: ${{matrix.region.data_plane_url}}" >> ${GITHUB_WORKSPACE}/config.yaml
+          printf "\nVAULTID: ${{matrix.region.vault_id}}" >> ${GITHUB_WORKSPACE}/config.yaml
+          printf "\nFUNCTION_DEPLOYED: ${{matrix.region.functions_deployed}}" >> ${GITHUB_WORKSPACE}/config.yaml
+          printf "\nFINTECH_DEPLOYED: ${{matrix.region.fintech_deployed}}" >> ${GITHUB_WORKSPACE}/config.yaml
 
       - name: Parse Test Results & Extract Metrics
         if: always() 
@@ -93,13 +128,12 @@ jobs:
           chmod +x ./test_results_handler.sh
           ./test_results_handler.sh true
 
-      - name: Upload test results as artifact
+      - name: Upload Test Results as Artifact
         if: always() 
         uses: actions/upload-artifact@v3
         with:
           name: test-results-${{ matrix.region.workspace_id }}
           path: test_results_${{ matrix.region.workspace_id }}.json
-
 
   process-results:
     name: Process Test Results
@@ -113,24 +147,23 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-  
-      - name: Download all test result artifacts
+
+      - name: Download All Test Result Artifacts
         uses: actions/download-artifact@v3
         with:
           path: test_results  # All artifacts will be downloaded to this folder
-  
-      - name: Process test results
+
+      - name: Process Test Results
         id: process
         run: .github/scripts/process_sanity_test_results.sh
-  
+
       - name: Set Job Outputs
         run: |
           echo "TEST_STATUS=${{ env.test_status }}" >> $GITHUB_OUTPUT
           echo "TOTAL_TESTS=${{ env.total_tests }}" >> $GITHUB_OUTPUT
           echo "PASSED_TESTS=${{ env.total_passed }}" >> $GITHUB_OUTPUT
           echo "FAILED_TESTS=${{ env.total_failed }}" >> $GITHUB_OUTPUT
-  
-  
+
   call-pdt-metrics:
     if: always() 
     needs: process-results
