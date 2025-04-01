@@ -26,7 +26,7 @@ total_failed=0
 
 # Find all JSON files inside test_results (including subdirectories)
 echo "Searching for test-results-*.json files..."
-for file in $(find test_results -type f -name "test-results-*.json"); do
+for file in $(find test_results -type f -name "test_results_*.json"); do
   if [[ -f "$file" ]]; then
     echo "Processing file: $file"  # Debugging
 
