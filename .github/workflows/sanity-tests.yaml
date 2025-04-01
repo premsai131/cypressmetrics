@@ -140,11 +140,12 @@ jobs:
         run: pwd
 
       - name: Upload Test Results as Artifact
-        if: always() 
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.region.workspace_id }}
-          path: ./test_results_${{ matrix.region.workspace_id }}.json  # Simplified relative path
+          path: ${{ env.GOPATH }}/src/github.com/${{ github.repository }}/test_results_${{ matrix.region.workspace_id }}.json
+
 
 
   process-results:
