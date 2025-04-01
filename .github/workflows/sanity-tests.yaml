@@ -175,7 +175,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: ${{ github.workspace }}/src/github.com/${{ github.repository }}/test_results
-
   
       - name: Debug Working Directory
         run: |
@@ -187,7 +186,7 @@ jobs:
           ls -alh test_results || echo "test_results directory not found"
           echo "Finding all test-results-*.json files:"
           find . -type f -name "test-results-*.json" || echo "No test result files found"
-      
+  
       - name: Process Test Results
         id: process
         run: |
@@ -195,14 +194,6 @@ jobs:
           chmod +x ./scripts/process_sanity_test_results.sh
           echo "Running the process script..."
           ./scripts/process_sanity_test_results.sh
-
-  
-      - name: Set Job Outputs
-        run: |
-          echo "TEST_STATUS=${{ env.test_status }}" >> $GITHUB_OUTPUT
-          echo "TOTAL_TESTS=${{ env.total_tests }}" >> $GITHUB_OUTPUT
-          echo "PASSED_TESTS=${{ env.total_passed }}" >> $GITHUB_OUTPUT
-          echo "FAILED_TESTS=${{ env.total_failed }}" >> $GITHUB_OUTPUT
 
   call-pdt-metrics:
     if: always() 
@@ -215,3 +206,4 @@ jobs:
           echo "TOTAL TESTS: ${{ needs.process-results.outputs.TOTAL_TESTS }}"
           echo "FAILED TESTS: ${{ needs.process-results.outputs.FAILED_TESTS }}"
           echo "PASSED TESTS: ${{ needs.process-results.outputs.PASSED_TESTS }}"
+
