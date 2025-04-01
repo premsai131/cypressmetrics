@@ -130,7 +130,7 @@ jobs:
 
       - name: Upload Test Results as Artifact
         if: always() 
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.region.workspace_id }}
           path: test_results_${{ matrix.region.workspace_id }}.json
@@ -146,10 +146,10 @@ jobs:
       PASSED_TESTS: ${{ steps.process.outputs.PASSED_TESTS }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download All Test Result Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: test_results  # All artifacts will be downloaded to this folder
 
