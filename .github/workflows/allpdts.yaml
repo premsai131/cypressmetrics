@@ -3,7 +3,6 @@ run-name: >
   Run PDTs | Env: ${{ github.event.inputs.release_env }} |
   Service: ${{ github.event.inputs.service_name == 'all' && 'all-services' || github.event.inputs.service_name }}
 
-
 on:
   workflow_dispatch:
     inputs:
@@ -22,3 +21,14 @@ on:
           - cypress
           - karate
           - sdk
+
+jobs:
+  test-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print inputs
+        run: |
+          echo "Environment: ${{ github.event.inputs.release_env }}"
+          echo "Service: ${{ github.event.inputs.service_name }}"
+      - name: Finish
+        run: echo "Workflow completed successfully!"
