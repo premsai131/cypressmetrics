@@ -1,0 +1,24 @@
+name: All PDTs trigger Workflow
+run-name: >
+  Run PDTs | Env: ${{ github.event.inputs.release_env }} |
+  Service: ${{ github.event.inputs.service_name == 'all' && 'all-services' || github.event.inputs.service_name }}
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_env:
+        description: "Target environment (sandbox, blitz, stage, prod)"
+        required: true
+        default: "sandbox"
+      service_name:
+        description: "Service to run (all, backend, cypress, karate, sdk)"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - backend
+          - cypress
+          - karate
+          - sdk
