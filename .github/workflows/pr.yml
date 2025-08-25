@@ -1,0 +1,38 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check-pr-rules:
+    name: Check PR Body, Branch & Title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+
+            // ---------- Branch name check ----------
+            const branchPattern = /^[a-zA-Z0-9]+\/[A-Z]{1,5}-\d+-[a-z0-9-]+$/;
+            if (!branchPattern.test(pr.data.head.ref)) {
+              core.setFailed(`❌ Branch name "${pr.data.head.ref}" must match: githubusername/TICKETID-short-description`);
+            } else {
+              core.info(`✅ Branch name "${pr.data.head.ref}" is valid.`);
+            }
+
+            // ---------- PR title check ----------
+            const prTitlePattern = /^[A-Z]{1,5}-\d+-[a-z0-9-]+$/;
+            if (!prTitlePattern.test(pr.data.title)) {
+              core.setFailed(`❌ PR title "${pr.data.title}" must match: TICKETID-short-description`);
+            } else {
+              core.info(`✅ PR title "${pr.data.title}" is valid.`);
+            }
