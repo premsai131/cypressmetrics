@@ -2,8 +2,8 @@ name: Run Karate Tests
 
 on:
   schedule:
-    - cron: '39 8 * * *' # blitzv2 -> 2:09 PM IST
-    - cron: '44 8 * * *' # stagev2 -> 2:14 PM IST
+    - cron: '35 11 * * *' # blitzv2 -> 5:05 PM IST
+    - cron: '40 11 * * *' # stagev2 -> 5:10 PM IST
 
 jobs:
   determine-environment:
@@ -17,15 +17,15 @@ jobs:
         id: set-default
         run: |
           echo "Event Name: ${{ github.event_name }}"
-          echo "Triggered Schedule: ${{ github.event.schedule }}"
+          echo "Triggered Schedule: [${{ github.event.schedule }}]"
 
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
 
-            if [[ "${{ github.event.schedule }}" == "39 8 * * *" ]]; then
+            if [[ "${{ github.event.schedule }}" == "35 11 * * *" ]]; then
               echo "Detected blitzv2 scheduled run"
               echo "env_name=blitzv2" >> $GITHUB_OUTPUT
 
-            elif [[ "${{ github.event.schedule }}" == "44 8 * * *" ]]; then
+            elif [[ "${{ github.event.schedule }}" == "40 11 * * *" ]]; then
               echo "Detected stagev2 scheduled run"
               echo "env_name=stagev2" >> $GITHUB_OUTPUT
 
