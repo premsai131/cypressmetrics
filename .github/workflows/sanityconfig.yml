@@ -1,4 +1,3 @@
-# region details for sanity tests.
 regions:
   - data_plane_url: https://vault.amazonapis.com
     functions_deployed: false
