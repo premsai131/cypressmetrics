@@ -1,6 +1,7 @@
 name: Run Karate Tests
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '35 11 * * *' # blitzv2 -> 5:05 PM IST
     - cron: '40 11 * * *' # stagev2 -> 5:10 PM IST
