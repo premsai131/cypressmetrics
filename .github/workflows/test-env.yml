@@ -1,0 +1,41 @@
+name: Test Environment Selection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  determine-environment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Test blitzv2 schedule
+        run: |
+          SCHEDULE="30 19 * * 0,1,2,3,4"
+
+          echo "Testing Schedule: $SCHEDULE"
+
+          if [[ "$SCHEDULE" == "30 23 * * 0,1,2,3,4" ]]; then
+            ENV_NAME="blitzv2"
+          elif [[ "$SCHEDULE" == "30 27 * * 0,1,2,3,4" ]]; then
+            ENV_NAME="stagev2"
+          else
+            ENV_NAME="unknown"
+          fi
+
+          echo "Selected Environment: $ENV_NAME"
+
+      - name: Test stagev2 schedule
+        run: |
+          SCHEDULE="30 20 * * 0,1,2,3,4"
+
+          echo "Testing Schedule: $SCHEDULE"
+
+          if [[ "$SCHEDULE" == "30 19 * * 0,1,2,3,4" ]]; then
+            ENV_NAME="blitzv2"
+          elif [[ "$SCHEDULE" == "30 20 * * 0,1,2,3,4" ]]; then
+            ENV_NAME="stagev2"
+          else
+            ENV_NAME="unknown"
+          fi
+
+          echo "Selected Environment: $ENV_NAME"
