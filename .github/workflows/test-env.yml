@@ -2,20 +2,8 @@ name: Run Karate Tests
 
 on:
   schedule:
-    - cron: '2 8 * * *' # blitzv2 -> 1:25 PM IST
-    - cron: '5 8 * * *'  # stagev2 -> 1:30 PM IST
-
-  workflow_dispatch:
-    inputs:
-      environment_name:
-        description: 'Select Environment'
-        type: choice
-        options:
-          - blitzv2
-          - stagev2
-          - sandboxv2
-        default: blitzv2
-        required: true
+    - cron: '39 8 * * *' # blitzv2 -> 2:09 PM IST
+    - cron: '44 8 * * *' # stagev2 -> 2:14 PM IST
 
 jobs:
   determine-environment:
@@ -33,11 +21,11 @@ jobs:
 
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
 
-            if [[ "${{ github.event.schedule }}" == "2 8 * * *" ]]; then
+            if [[ "${{ github.event.schedule }}" == "39 8 * * *" ]]; then
               echo "Detected blitzv2 scheduled run"
               echo "env_name=blitzv2" >> $GITHUB_OUTPUT
 
-            elif [[ "${{ github.event.schedule }}" == "5 8 * * *" ]]; then
+            elif [[ "${{ github.event.schedule }}" == "44 8 * * *" ]]; then
               echo "Detected stagev2 scheduled run"
               echo "env_name=stagev2" >> $GITHUB_OUTPUT
 
@@ -46,9 +34,6 @@ jobs:
               exit 1
             fi
 
-          else
-            echo "Manual workflow dispatch detected"
-            echo "env_name=${{ github.event.inputs.environment_name }}" >> $GITHUB_OUTPUT
           fi
 
           echo "Final environment:"
