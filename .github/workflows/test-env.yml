@@ -1,41 +1,59 @@
-name: Test Environment Selection
+name: Run Karate Tests
 
 on:
+  schedule:
+    - cron: '2 8 * * *' # blitzv2 -> 1:25 PM IST
+    - cron: '5 8 * * *'  # stagev2 -> 1:30 PM IST
+
   workflow_dispatch:
+    inputs:
+      environment_name:
+        description: 'Select Environment'
+        type: choice
+        options:
+          - blitzv2
+          - stagev2
+          - sandboxv2
+        default: blitzv2
+        required: true
 
 jobs:
   determine-environment:
     runs-on: ubuntu-latest
 
+    outputs:
+      env_name: ${{ steps.set-default.outputs.env_name }}
+
     steps:
-      - name: Test blitzv2 schedule
+      - name: Set environment name
+        id: set-default
         run: |
-          SCHEDULE="30 19 * * 0,1,2,3,4"
+          echo "Event Name: ${{ github.event_name }}"
+          echo "Triggered Schedule: ${{ github.event.schedule }}"
 
-          echo "Testing Schedule: $SCHEDULE"
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
 
-          if [[ "$SCHEDULE" == "30 23 * * 0,1,2,3,4" ]]; then
-            ENV_NAME="blitzv2"
-          elif [[ "$SCHEDULE" == "30 27 * * 0,1,2,3,4" ]]; then
-            ENV_NAME="stagev2"
+            if [[ "${{ github.event.schedule }}" == "2 8 * * *" ]]; then
+              echo "Detected blitzv2 scheduled run"
+              echo "env_name=blitzv2" >> $GITHUB_OUTPUT
+
+            elif [[ "${{ github.event.schedule }}" == "5 8 * * *" ]]; then
+              echo "Detected stagev2 scheduled run"
+              echo "env_name=stagev2" >> $GITHUB_OUTPUT
+
+            else
+              echo "Unknown schedule detected"
+              exit 1
+            fi
+
           else
-            ENV_NAME="unknown"
+            echo "Manual workflow dispatch detected"
+            echo "env_name=${{ github.event.inputs.environment_name }}" >> $GITHUB_OUTPUT
           fi
 
-          echo "Selected Environment: $ENV_NAME"
+          echo "Final environment:"
+          cat $GITHUB_OUTPUT
 
-      - name: Test stagev2 schedule
+      - name: Print selected environment
         run: |
-          SCHEDULE="30 20 * * 0,1,2,3,4"
-
-          echo "Testing Schedule: $SCHEDULE"
-
-          if [[ "$SCHEDULE" == "30 19 * * 0,1,2,3,4" ]]; then
-            ENV_NAME="blitzv2"
-          elif [[ "$SCHEDULE" == "30 20 * * 0,1,2,3,4" ]]; then
-            ENV_NAME="stagev2"
-          else
-            ENV_NAME="unknown"
-          fi
-
-          echo "Selected Environment: $ENV_NAME"
+          echo "Selected env: ${{ steps.set-default.outputs.env_name }}"
